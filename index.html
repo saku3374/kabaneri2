@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>カバネリ2</title>
+<style>
+:root{
+  --bg:#0a0a0f;--bg2:#11111a;--bg3:#181822;--bg4:#1e1e2a;
+  --border:#252535;--border2:#2e2e42;
+  --text:#b8b0a0;--dim:#4a4860;--dim2:#666580;
+  --red:#c42828;--red2:#e84040;--redbg:#1a0808;
+  --green:#1e7a20;--green2:#30b034;--greenbg:#081408;
+  --blue:#1878c0;--blue2:#2898e8;--bluebg:#060e18;
+  --purple:#7030b8;--purple2:#9850e0;--purplebg:#100818;
+  --gray:#363650;--graybg:#101018;
+  --gold:#a06808;--gold2:#c88010;--gold3:#e8a820;
+  --accent:#c84020;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;user-select:none;}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Hiragino Kaku Gothic ProN','Yu Gothic',sans-serif;overflow:hidden;}
+#app{display:flex;flex-direction:column;height:100dvh;}
+#log-panel{background:var(--bg2);border-bottom:1px solid var(--border);padding:3px 8px;flex-shrink:0;}
+.log-row{display:grid;grid-template-columns:40px 1fr 52px;align-items:baseline;font-size:12px;font-family:monospace;line-height:1.55;}
+.lc{font-size:10px;font-weight:bold;letter-spacing:.5px;}
+.lc.m{color:var(--red2)}.lc.k{color:var(--blue2)}.lc.i{color:var(--green2)}
+.ls{word-break:break-all;letter-spacing:.5px;}
+.lp{text-align:right;color:var(--gold3);font-size:11px;font-weight:bold;}
+#tabs{display:flex;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0;}
+.tab{flex:1;padding:7px 2px;text-align:center;font-size:11px;color:var(--dim2);cursor:pointer;border-bottom:2px solid transparent;transition:color .15s;}
+.tab.active{color:var(--gold3);border-bottom-color:var(--gold3);}
+#main{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+.tab-content{display:none;}
+.tab-content.active{display:block;}
+#tab-record{padding:0;overflow:hidden;}
+#rec-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0;height:100%;border-top:1px solid var(--border);}
+.cc{display:flex;flex-direction:column;border-right:1px solid var(--border);}
+.cc:last-child{border-right:none;}
+.cch{font-size:11px;font-weight:bold;padding:4px 4px;text-align:center;border-bottom:1px solid var(--border);background:var(--bg2);}
+.cch.m{color:var(--red2)}.cch.k{color:var(--blue2)}.cch.i{color:var(--green2)}
+.cpt{font-size:14px;font-weight:bold;color:var(--gold3);text-align:center;padding:3px 2px;font-family:monospace;}
+.clt{font-size:9px;color:var(--dim2);text-align:center;padding:0 2px 3px;border-bottom:1px solid var(--border);}
+.clt b{color:var(--text);}
+.csg{display:grid;grid-template-columns:repeat(2,1fr);gap:2px;padding:3px 2px 2px;flex:1;}
+.csb{background:var(--bg3);border:1px solid var(--border2);border-radius:3px;padding:4px 1px;display:flex;flex-direction:column;align-items:center;gap:1px;cursor:pointer;justify-content:center;min-height:44px;}
+.csb:active{opacity:.4;transform:scale(.9);}
+.csb .s{font-size:16px;line-height:1;}
+.sstar{font-size:11px!important;}
+.csn{font-size:8px;color:var(--dim2);}
+.csp{font-size:8px;color:var(--gold2);font-weight:bold;}
+.cub{width:100%;background:var(--bg2);border:none;border-top:1px solid var(--border);color:var(--dim2);font-size:12px;padding:4px;cursor:pointer;}
+.cub:active{opacity:.6;}
+.crr{display:flex;gap:2px;padding:2px;border-top:1px solid var(--border);}
+.crm{flex:2;border:none;border-radius:3px;padding:5px 1px;font-size:12px;cursor:pointer;text-align:center;line-height:1.2;}
+.crm:active{opacity:.6;transform:scale(.95);}
+.crs{flex:1;border:none;border-radius:3px;padding:5px 1px;font-size:11px;cursor:pointer;text-align:center;line-height:1.2;}
+.crs:active{opacity:.6;transform:scale(.95);}
+.crn{font-size:8px;font-weight:bold;display:block;}
+.r-mz{background:var(--redbg);color:#ff8080;border:1px solid var(--red);}
+.r-iz{background:var(--greenbg);color:#80e880;border:1px solid var(--green);}
+.r-dz{background:var(--purplebg);color:#c080f8;border:1px solid var(--purple);}
+.r-bb{background:var(--bluebg);color:#80c8f8;border:1px solid var(--blue);}
+.r-rb{background:var(--graybg);color:#888898;border:1px solid var(--gray);}
+.r-st{background:#181000;color:#e8b820;border:1px solid var(--gold);}
+.s0{color:#a0a090}.s1{color:#f0d020}.s2{color:#f08828}
+.s3{color:#38c8f0}.s4{color:#ff9900}.s5{color:#d838f8}.s6{color:#ff28b0}
+.s7{color:#ff3030;}
+.hkbtn{width:100%;margin:3px 0;padding:5px;background:#1a1000;border:1px solid #4a3000;border-radius:6px;font-size:12px;color:#665500;cursor:pointer;transition:all .15s;}
+.hkbtn.on{background:#2a1a00;border-color:#c08000;color:#f0b000;font-weight:bold;}
+#sbar{background:var(--bg2);border-top:1px solid var(--border);padding:3px 8px;display:flex;gap:10px;align-items:center;flex-shrink:0;}
+.si{font-size:10px;color:var(--dim2);}.si b{color:var(--text);font-size:11px;}
+#nk-panel{position:fixed;bottom:0;left:0;right:0;background:var(--bg2);border-top:2px solid var(--border2);z-index:80;transform:translateY(100%);transition:transform .2s ease;}
+#nk-panel.open{transform:translateY(0);}
+.nk-disp{font-size:28px;font-weight:bold;color:var(--gold3);text-align:center;padding:8px;font-family:monospace;}
+.nk-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:6px;}
+.nkb{padding:12px;background:var(--bg3);border:1px solid var(--border2);border-radius:6px;font-size:18px;color:var(--text);text-align:center;cursor:pointer;}
+.nkb:active{opacity:.5;}
+.nkb.ok{background:#0e200e;color:#80e880;border-color:var(--green);}
+.nkb.del{color:var(--dim2);}
+.mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;align-items:center;justify-content:center;}
+.mo.open{display:flex;}
+.md{background:var(--bg2);border:1px solid var(--border2);border-radius:12px;padding:16px;width:90%;max-width:340px;max-height:85vh;overflow-y:auto;}
+.md h3{font-size:15px;color:var(--gold3);margin-bottom:12px;text-align:center;}
+.mdb{display:flex;gap:8px;}
+.mbtn{flex:1;padding:12px;background:var(--bg3);border:1px solid var(--border2);border-radius:8px;font-size:14px;color:var(--text);cursor:pointer;text-align:center;}
+.mbtn:active{opacity:.6;}
+.mbo{border-color:var(--red);color:var(--red2);background:var(--redbg);}
+#st-panel{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:90;display:none;align-items:flex-end;}
+#st-panel.open{display:flex;}
+#st-inner{background:var(--bg2);border-top:2px solid var(--border2);padding:16px;width:100%;}
+.stp-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.stp-title{font-size:13px;color:var(--gold3);font-weight:bold;}
+.stp-close{background:none;border:none;color:var(--dim2);font-size:16px;cursor:pointer;padding:2px 8px;}
+.stp-body{display:flex;flex-direction:column;gap:8px;}
+.stp-row{display:flex;align-items:center;gap:10px;}
+.stp-label{font-size:12px;color:var(--dim2);min-width:40px;}
+.stp-disp{flex:1;background:var(--bg3);border:1px solid var(--border2);border-radius:6px;padding:8px 12px;font-size:20px;font-weight:bold;color:var(--gold3);text-align:center;cursor:pointer;font-family:monospace;}
+.stp-ok{width:100%;margin-top:8px;padding:12px;background:#0e200e;border:1px solid var(--green);border-radius:8px;font-size:14px;color:#80e880;cursor:pointer;}
+#st-nk-panel{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:95;display:none;align-items:flex-end;}
+#st-nk-panel.open{display:flex;}
+#st-nk-inner{background:var(--bg2);border-top:2px solid var(--border2);padding:12px;width:100%;}
+#st-nk-disp{font-size:28px;font-weight:bold;color:var(--gold3);text-align:center;padding:6px;font-family:monospace;margin-bottom:8px;}
+.st-nk-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;}
+#icz{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:110;flex-direction:column;}
+#icz.open{display:flex;}
+.czh{background:var(--greenbg);border-bottom:1px solid var(--green);padding:10px 14px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;}
+.czht{font-size:14px;font-weight:bold;color:var(--green2);}
+.czlf{display:flex;gap:4px;padding:10px 14px 6px;flex-shrink:0;}
+.czlfi{width:32px;height:32px;border-radius:50%;background:var(--greenbg);border:2px solid var(--green);display:flex;align-items:center;justify-content:center;font-size:16px;}
+.czlfi.on{background:#1e5020;}
+.czs{flex:1;overflow-y:auto;padding:6px 14px;}
+.czse{font-size:11px;font-family:monospace;padding:2px 0;border-bottom:1px solid var(--border);}
+.czbl{display:flex;gap:4px;padding:8px 14px;flex-shrink:0;flex-wrap:wrap;}
+.czrb{flex:1;min-width:60px;padding:8px 4px;border:1px solid var(--border2);border-radius:6px;background:var(--bg3);font-size:11px;color:var(--text);cursor:pointer;text-align:center;line-height:1.4;}
+.czrb:active{opacity:.6;}
+.czab{display:flex;gap:4px;padding:0 14px 8px;flex-shrink:0;}
+.czab button{flex:1;padding:8px;border:1px solid var(--border2);border-radius:6px;background:var(--bg2);color:var(--dim2);font-size:12px;cursor:pointer;}
+.czrl{font-size:9px;color:var(--dim2);display:block;}
+.rc{background:var(--bg2);border:1px solid var(--border);border-radius:8px;margin:6px;padding:10px;}
+.rch{font-size:11px;color:var(--gold2);font-weight:bold;margin-bottom:6px;}
+.rgrid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:2px;}
+.gh{font-size:9px;color:var(--dim2);padding:2px 4px;border-bottom:1px solid var(--border);}
+.gc{font-size:12px;padding:4px 4px;font-family:monospace;}
+.refb{font-size:10px;color:var(--dim2);background:var(--bg3);border-radius:4px;padding:6px 8px;margin:6px;line-height:1.7;}
+.avg-grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:2px;margin-top:4px;}
+.avg-h{font-size:9px;color:var(--dim2);padding:2px 4px;border-bottom:1px solid var(--border);}
+.avg-c{font-size:12px;padding:4px 4px;font-family:monospace;}
+#tab-export{padding:6px;}
+#tab-export textarea{width:100%;height:280px;background:var(--bg2);border:1px solid var(--border2);border-radius:6px;color:var(--text);font-size:12px;font-family:monospace;padding:8px;resize:none;line-height:1.6;}
+.cpb{width:100%;margin-top:6px;padding:12px;background:var(--bg3);border:1px solid var(--border2);border-radius:8px;font-size:14px;color:var(--text);cursor:pointer;}
+.cpb:active{opacity:.6;}
+.es{margin-top:8px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:8px;}
+.esr{display:flex;justify-content:space-between;align-items:center;padding:3px 0;border-bottom:1px solid var(--border);}
+.esr:last-child{border-bottom:none;}
+.esl{font-size:11px;color:var(--dim2);}
+.esv{font-size:13px;font-weight:bold;color:var(--gold3);}
+#bell-bar{display:flex;align-items:center;gap:8px;padding:5px 6px;background:var(--bg2);border-top:1px solid var(--border);flex-shrink:0;}
+#bell-btn{padding:6px 12px;background:#1a1400;border:1px solid var(--gold);border-radius:6px;color:var(--gold3);font-size:13px;cursor:pointer;}
+#bell-btn:active{opacity:.6;transform:scale(.95);}
+#bell-count{font-size:13px;color:var(--text);font-family:monospace;}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="log-panel">
+    <div class="log-row"><span class="lc m">無名</span><span class="ls" id="lm">—</span><span class="lp" id="lmp"></span></div>
+    <div class="log-row"><span class="lc k">カバネ</span><span class="ls" id="lk">—</span><span class="lp" id="lkp"></span></div>
+    <div class="log-row"><span class="lc i">生駒</span><span class="ls" id="li">—</span><span class="lp" id="lip"></span></div>
+  </div>
+  <div id="tabs">
+    <div class="tab active" id="t-record" onclick="sw('record')">📝 記録</div>
+    <div class="tab" id="t-rate" onclick="sw('rate')">💡 発光率</div>
+    <div class="tab" id="t-export" onclick="sw('export')">📊 書出し</div>
+  </div>
+  <div id="main">
+    <div class="tab-content active" id="tab-record">
+      <div id="rec-grid">
+        <!-- 無名列 -->
+        <div class="cc">
+          <div class="cch m">🔴 無名</div>
+          <div class="cpt"><span id="m-pt">0</span>pt</div>
+          <div class="clt">発光 <b id="m-lit">0</b>/<b id="m-tot">0</b></div>
+          <div class="csg">
+            <button class="csb" onclick="add('m','○',1,true,false)"><span class="s s0">○</span><span class="csn">通常</span><span class="csp">1</span></button>
+            <button class="csb" onclick="add('m','◎',15,true,true)"><span class="s s1">◎</span><span class="csn">発光</span><span class="csp">15</span></button>
+            <button class="csb" onclick="add('m','●',15,false,false)"><span class="s s2">●</span><span class="csn">高確</span><span class="csp">15</span></button>
+            <button class="csb" onclick="add('m','☆',15,false,false)"><span class="s s3">☆</span><span class="csn">複合</span><span class="csp">15</span></button>
+            <button class="csb" onclick="add('m','★',30,false,false)"><span class="s s4">★</span><span class="csn">複合高</span><span class="csp">30</span></button>
+            <button class="csb" onclick="add('m','◇',30,false,false)"><span class="s s5">◇</span><span class="csn">全員</span><span class="csp">30</span></button>
+            <button class="csb" onclick="add('m','◆',60,false,false)"><span class="s s6">◆</span><span class="csn">全員高</span><span class="csp">60</span></button>
+            <button class="csb" onclick="add('m','＊',0,false,false)"><span class="s s7 sstar">＊</span><span class="csn">超高確</span><span class="csp">除外</span></button>
+          </div>
+          <button class="hkbtn" id="hk-m" onclick="toggleHikaku('m')">発光中 OFF</button>
+          <button class="cub" onclick="undo('m')">↩</button>
+          <div class="crr">
+            <button class="crm r-mz" onclick="res('m','🟥','無名CZ')">🟥<br><span class="crn">無名CZ</span></button>
+            <button class="crm r-dz" onclick="res('m','🟪','銅藍')">🟪<br><span class="crn">銅藍</span></button>
+            <button class="crs r-rb" onclick="rbModal('m')">⬛<br><span class="crn">RB</span></button>
+            <button class="crs r-bb" onclick="res('m','🟦','BB')">🟦<br><span class="crn">BB</span></button>
+            <button class="crs r-st" onclick="st('m')">→<br><span class="crn">ST</span></button>
+          </div>
+        </div>
+        <!-- カバネ列 -->
+        <div class="cc">
+          <div class="cch k">🔵 カバネ</div>
+          <div class="cpt"><span id="k-pt">0</span>pt</div>
+          <div class="clt">周期<b id="k-cyc">①</b> 発光<b id="k-lit">0</b>/<b id="k-tot">0</b></div>
+          <div class="csg">
+            <button class="csb" onclick="add('k','○',1,true,false)"><span class="s s0">○</span><span class="csn">通常</span><span class="csp">1</span></button>
+            <button class="csb" onclick="add('k','◎',15,true,true)"><span class="s s1">◎</span><span class="csn">発光</span><span class="csp">15</span></button>
+            <button class="csb" onclick="add('k','●',15,false,false)"><span class="s s2">●</span><span class="csn">高確</span><span class="csp">15</span></button>
+            <button class="csb" onclick="add('k','☆',15,false,false)"><span class="s s3">☆</span><span class="csn">複合</span><span class="csp">15</span></button>
+            <button class="csb" onclick="add('k','★',30,false,false)"><span class="s s4">★</span><span class="csn">複合高</span><span class="csp">30</span></button>
+            <button class="csb" onclick="add('k','◇',30,false,false)"><span class="s s5">◇</span><span class="csn">全員</span><span class="csp">30</span></button>
+            <button class="csb" onclick="add('k','◆',60,false,false)"><span class="s s6">◆</span><span class="csn">全員高</span><span class="csp">60</span></button>
+            <button class="csb" onclick="add('k','＊',0,false,false)"><span class="s s7 sstar">＊</span><span class="csn">超高確</span><span class="csp">除外</span></button>
+          </div>
+          <button class="hkbtn" id="hk-k" onclick="toggleHikaku('k')">発光中 OFF</button>
+          <button class="cub" onclick="undo('k')">↩</button>
+          <div class="crr">
+            <button class="crs r-rb" onclick="rbModal('k')">⬛<br><span class="crn">RB</span></button>
+            <button class="crs r-bb" onclick="res('k','🟦','BB')">🟦<br><span class="crn">BB</span></button>
+            <button class="crs" style="background:#0a1a2a;border-color:#4488bb;color:#88ccff;font-size:11px" onclick="kPtMiss()">🔵❌<br><span class="crn">pt外れ</span></button>
+            <button class="crs" style="background:#0a1a2a;border-color:#4488bb;color:#88ccff;font-size:11px" onclick="openGcycMo()">🔵G<br><span class="crn">G数</span></button>
+            <button class="crs r-st" onclick="st('k')">→<br><span class="crn">ST</span></button>
+          </div>
+        </div>
+        <!-- 生駒列 -->
+        <div class="cc">
+          <div class="cch i">🟢 生駒</div>
+          <div class="cpt"><span id="i-pt">0</span>pt</div>
+          <div class="clt">発光 <b id="i-lit">0</b>/<b id="i-tot">0</b></div>
+          <div class="csg">
+            <button class="csb" onclick="add('i','○',1,true,false)"><span class="s s0">○</span><span class="csn">通常</span><span class="csp">1</span></button>
+            <button class="csb" onclick="add('i','◎',15,true,true)"><span class="s s1">◎</span><span class="csn">発光</span><span class="csp">15</span></button>
+            <button class="csb" onclick="add('i','●',15,false,false)"><span class="s s2">●</span><span class="csn">高確</span><span class="csp">15</span></button>
+            <button class="csb" onclick="add('i','☆',15,false,false)"><span class="s s3">☆</span><span class="csn">複合</span><span class="csp">15</span></button>
+            <button class="csb" onclick="add('i','★',30,false,false)"><span class="s s4">★</span><span class="csn">複合高</span><span class="csp">30</span></button>
+            <button class="csb" onclick="add('i','◇',30,false,false)"><span class="s s5">◇</span><span class="csn">全員</span><span class="csp">30</span></button>
+            <button class="csb" onclick="add('i','◆',60,false,false)"><span class="s s6">◆</span><span class="csn">全員高</span><span class="csp">60</span></button>
+            <button class="csb" onclick="add('i','＊',0,false,false)"><span class="s s7 sstar">＊</span><span class="csn">超高確</span><span class="csp">除外</span></button>
+          </div>
+          <button class="hkbtn" id="hk-i" onclick="toggleHikaku('i')">発光中 OFF</button>
+          <button class="cub" onclick="undo('i')">↩</button>
+          <div class="crr">
+            <button class="crm r-iz" onclick="openICZ()">🟩<br><span class="crn">生駒CZ</span></button>
+            <button class="crm r-dz" onclick="res('i','🟪','銅藍')">🟪<br><span class="crn">銅藍</span></button>
+            <button class="crs r-rb" onclick="rbModal('i')">⬛<br><span class="crn">RB</span></button>
+            <button class="crs r-bb" onclick="res('i','🟦','BB')">🟦<br><span class="crn">BB</span></button>
+            <button class="crs r-st" onclick="st('i')">→<br><span class="crn">ST</span></button>
+          </div>
+        </div>
+      </div>
+      <div id="bell-bar">
+        <button id="bell-btn" onclick="addBell()">🔔 ベル</button>
+        <span id="bell-count">0回</span>
+        <button id="memo-quick-btn" onclick="openQuickMemo()" style="margin-left:auto;padding:6px 12px;background:#0e1a0e;border:1px solid #306030;border-radius:6px;color:#60a060;font-size:13px;cursor:pointer;">📝</button>
+      </div>
+    </div>
+    <!-- 発光率タブ -->
+    <div class="tab-content" id="tab-rate">
+      <div class="rc">
+        <div class="rch">単独チャンス目 発光率（低確・単独のみ）</div>
+        <div class="rgrid">
+          <div class="gh">キャラ</div><div class="gh" style="text-align:center">発光</div><div class="gh" style="text-align:center">総数</div><div class="gh" style="text-align:right">発光率</div>
+          <div class="gc" style="color:var(--red2)">🔴 無名</div><div class="gc" id="r-m-l">0</div><div class="gc" id="r-m-t">0</div><div class="gc" id="r-m-p" style="color:var(--red2)">—</div>
+          <div class="gc" style="color:var(--green2)">🟢 生駒</div><div class="gc" id="r-i-l">0</div><div class="gc" id="r-i-t">0</div><div class="gc" id="r-i-p" style="color:var(--green2)">—</div>
+          <div class="gc" style="color:var(--blue2)">🔵 カバネ</div><div class="gc" id="r-k-l">0</div><div class="gc" id="r-k-t">0</div><div class="gc" id="r-k-p" style="color:var(--blue2)">—</div>
+          <div class="gc" style="color:var(--gold2)">無名+生駒</div><div class="gc" id="r-mi-l">0</div><div class="gc" id="r-mi-t">0</div><div class="gc" id="r-mi-p" style="color:var(--gold2)">—</div>
+        </div>
+      </div>
+      <div class="refb">
+        <b>カウントルール</b><br>
+        ○●：単独低確のみカウント<br>
+        ◎：発光→カウント / CZ当選時は除外<br>
+        ☆★◇◆＊：カウント対象外<br>
+        発光中ON時の○●：カウント対象外<br><br>
+        <b>参考値</b><br>
+        設定6：17.4% / 低設定：11.9%
+      </div>
+      <div class="rc">
+        <div class="rch">CZ到達PT平均</div>
+        <div class="avg-grid">
+          <div class="avg-h">キャラ</div><div class="avg-h">合計PT</div><div class="avg-h">回数</div><div class="avg-h">平均PT</div>
+          <div class="avg-c" style="color:var(--red2)">🔴</div><div class="avg-c" id="avg-m-sum">—</div><div class="avg-c" id="avg-m-n">0</div><div class="avg-c" id="avg-m-v" style="color:var(--red2)">—</div>
+          <div class="avg-c" style="color:var(--green2)">🟢</div><div class="avg-c" id="avg-i-sum">—</div><div class="avg-c" id="avg-i-n">0</div><div class="avg-c" id="avg-i-v" style="color:var(--green2)">—</div>
+          <div class="avg-c" style="color:var(--blue2)">🔵</div><div class="avg-c" id="avg-k-sum">—</div><div class="avg-c" id="avg-k-n">0</div><div class="avg-c" id="avg-k-v" style="color:var(--blue2)">—</div>
+        </div>
+        <div class="refb" style="margin:6px 0 0">設定56：約66pt / 設定4：約75pt / 設定123：約89pt</div>
+      </div>
+      <div class="rc">
+        <div class="rch">🔔 下段ベル確率</div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+          <span style="color:var(--dim2);font-size:12px">総G数</span>
+          <input id="total-g-input" type="number" inputmode="numeric"
+            style="background:var(--bg3);border:1px solid var(--border2);border-radius:4px;color:var(--gold3);font-size:16px;padding:4px 8px;width:90px;text-align:center"
+            placeholder="0" oninput="renderBell()">
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:12px;">
+          <span style="color:var(--dim2);min-width:60px">ベル回数</span>
+          <span id="rate-bell-count" style="color:var(--gold3);font-size:16px;font-weight:bold;font-family:monospace">0</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:12px;">
+          <span style="color:var(--dim2);min-width:60px">確率</span>
+          <span id="bell-rate-disp" style="color:var(--text);font-size:16px;font-weight:bold;">—</span>
+        </div>
+        <div class="refb" style="margin-top:2px">設定6: 1/99.1　設定1: 1/121.1</div>
+      </div>
+    </div>
+    <!-- 書出しタブ -->
+    <div class="tab-content" id="tab-export">
+      <textarea id="lo" spellcheck="false" oninput="exEdited=true">記録を開始してください</textarea>
+      <button class="cpb" onclick="exEdited=false;copyLog()">📋 コピー</button>
+      <div class="es">
+        <div class="esr"><span class="esl">無名+生駒発光率：</span><span class="esv" id="ex-mi">—</span></div>
+        <div class="esr"><span class="esl">CZ到達PT平均：</span><span class="esv" id="ex-avg">—</span></div>
+      </div>
+      <button onclick="openM()" style="width:100%;margin-top:8px;padding:10px;background:#1a0808;border:1px solid #4a1010;border-radius:8px;color:#884040;font-size:13px;cursor:pointer;">🗑 全データリセット</button>
+    </div>
+  </div>
+  <div id="sbar">
+    <span class="si">周期 <b id="sb-c">①</b></span>
+    <span class="si">無名PT <b id="sb-m">0</b></span>
+    <span class="si">カバネPT <b id="sb-k">0</b></span>
+    <span class="si">生駒PT <b id="sb-i">0</b></span>
+  </div>
+</div>
+
+<!-- STパネル -->
+
+<div id="st-panel">
+  <div id="st-inner">
+    <div class="stp-header">
+      <span class="stp-title">↓ST 記録</span>
+      <button class="stp-close" onclick="closeSTPanel()">✕</button>
+    </div>
+    <div class="stp-body">
+      <div class="stp-row">
+        <div class="stp-label">連数</div>
+        <div class="stp-disp" id="st-ren-disp" onclick="openSTNK('ren')">—</div>
+      </div>
+      <div class="stp-row">
+        <div class="stp-label">枚数</div>
+        <div class="stp-disp" id="st-mai-disp" onclick="openSTNK('mai')">—</div>
+      </div>
+      <button class="stp-ok" onclick="commitST()">✓ ST終了を記録</button>
+    </div>
+  </div>
+</div>
+<div id="st-nk-panel">
+  <div id="st-nk-inner">
+    <div id="st-nk-disp">—</div>
+    <div class="st-nk-grid">
+      <button class="nkb" onclick="stNkNum('1')">1</button><button class="nkb" onclick="stNkNum('2')">2</button><button class="nkb" onclick="stNkNum('3')">3</button>
+      <button class="nkb" onclick="stNkNum('4')">4</button><button class="nkb" onclick="stNkNum('5')">5</button><button class="nkb" onclick="stNkNum('6')">6</button>
+      <button class="nkb" onclick="stNkNum('7')">7</button><button class="nkb" onclick="stNkNum('8')">8</button><button class="nkb" onclick="stNkNum('9')">9</button>
+      <button class="nkb del" onclick="stNkDel()">⌫</button><button class="nkb" onclick="stNkNum('0')">0</button><button class="nkb ok" onclick="stNkOk()">確定</button>
+    </div>
+  </div>
+</div>
+
+<!-- 生駒CZ -->
+
+<div id="icz">
+  <div class="czh"><span class="czht">🟢 生駒CZ</span><button onclick="closeICZ()" style="background:none;border:none;color:var(--dim2);font-size:18px;cursor:pointer;">✕</button></div>
+  <div class="czlf" id="czlf"></div>
+  <div class="czs" id="czs"></div>
+  <div class="czbl">
+    <button class="czrb" style="border-color:var(--gold);min-height:52px" onclick="czRole('ベル','🔔','recover')"><span style="font-size:18px">🔔</span><span class="czrl">ベル</span></button>
+    <button class="czrb" style="border-color:var(--blue2);min-height:52px" onclick="czRole('チャンス目','💠','recover')"><span style="font-size:18px">💠</span><span class="czrl">チャンス目</span></button>
+    <button class="czrb" style="border-color:#88aaff;min-height:52px" onclick="czRole('複合','🔷','invincible')"><span style="font-size:18px">🔷</span><span class="czrl">複合</span></button>
+    <button class="czrb" style="border-color:var(--red2);min-height:52px" onclick="czRole('ハズレ減','💔','lose')"><span style="font-size:18px">💔</span><span class="czrl">ハズレ減</span></button>
+    <button class="czrb" style="border-color:var(--dim2);min-height:52px" onclick="czRole('耐えた','🛡','hold')"><span style="font-size:18px">🛡</span><span class="czrl">耐えた</span></button>
+  </div>
+  <div class="czab">
+    <button style="border-color:var(--green);color:var(--green2);background:var(--greenbg)" onclick="czLifeAdj(1)">ライフ +1</button>
+    <button style="border-color:var(--red);color:var(--red2);background:var(--redbg)" onclick="czLifeAdj(-1)">ライフ -1</button>
+    <button class="czrb" style="font-size:16px;padding:8px" onclick="czUndo()"><span style="font-size:16px">↩</span><span class="czrl">戻す</span></button>
+  </div>
+  <div class="czab">
+    <button style="border-color:var(--green);color:var(--green2);background:var(--greenbg)" onclick="czEnd(true)">✅ CZ成功</button>
+    <button style="border-color:var(--red);color:var(--red2);background:var(--redbg)" onclick="czEnd(false)">❌ CZ失敗</button>
+  </div>
+</div>
+
+<!-- G数到達モーダル -->
+
+<div class="mo" id="gcyc-mo">
+  <div class="md">
+    <h3>🔵 G数周期到達</h3>
+    <p style="font-size:12px;color:var(--dim2);margin-bottom:10px">到達G数を選択</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px">
+      <button class="mbtn" style="font-size:13px" onclick="gcycSelect(150)">150G</button>
+      <button class="mbtn" style="font-size:13px" onclick="gcycSelect(300)">300G</button>
+      <button class="mbtn" style="font-size:13px" onclick="gcycSelect(596)">596G</button>
+      <button class="mbtn" style="font-size:13px" onclick="gcycSelect(0)">手入力</button>
+    </div>
+    <div id="gcyc-input-wrap" style="display:none;margin-bottom:10px">
+      <div id="gcyc-g-disp" style="background:var(--bg3);border:1px solid var(--border2);border-radius:4px;color:var(--gold3);font-size:18px;padding:6px 8px;width:100%;text-align:center;margin-bottom:6px;min-height:34px">—</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px">
+        <button class="mbtn" style="font-size:16px;padding:8px" onclick="gcycNk('1')">1</button>
+        <button class="mbtn" style="font-size:16px;padding:8px" onclick="gcycNk('2')">2</button>
+        <button class="mbtn" style="font-size:16px;padding:8px" onclick="gcycNk('3')">3</button>
+        <button class="mbtn" style="font-size:16px;padding:8px" onclick="gcycNk('4')">4</button>
+        <button class="mbtn" style="font-size:16px;padding:8px" onclick="gcycNk('5')">5</button>
+        <button class="mbtn" style="font-size:16px;padding:8px" onclick="gcycNk('6')">6</button>
+        <button class="mbtn" style="font-size:16px;padding:8px" onclick="gcycNk('7')">7</button>
+        <button class="mbtn" style="font-size:16px;padding:8px" onclick="gcycNk('8')">8</button>
+        <button class="mbtn" style="font-size:16px;padding:8px" onclick="gcycNk('9')">9</button>
+        <button class="mbtn mbo" style="font-size:13px;padding:8px" onclick="gcycNk('del')">⌫</button>
+        <button class="mbtn" style="font-size:16px;padding:8px" onclick="gcycNk('0')">0</button>
+        <button class="mbtn" style="font-size:13px;padding:8px;opacity:.3" disabled></button>
+      </div>
+    </div>
+    <p style="font-size:12px;color:var(--dim2);margin-bottom:8px">結果</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px">
+      <button class="mbtn" style="background:#0e200e;color:#80e880;border:1px solid var(--green);font-size:13px" onclick="gcycCommit('bb')">🔵🟦 BB当選</button>
+      <button class="mbtn" style="background:#1a100a;color:#e8b040;border:1px solid #a06020;font-size:13px" onclick="gcycCommit('rb')">🔵⬛ RB当選</button>
+    </div>
+    <button class="mbtn mbo" style="margin-bottom:6px;width:100%" onclick="gcycCommit('miss')">🔵❌ 外れ</button>
+    <button class="mbtn mbo" style="font-size:12px;width:100%" onclick="closeMo('gcyc-mo')">キャンセル</button>
+  </div>
+</div>
+
+<!-- クイックメモモーダル -->
+
+<div class="mo" id="qmemo-mo">
+  <div class="md">
+    <h3>📝 メモを追加</h3>
+    <div id="qmemo-disp" style="background:var(--bg3);border:1px solid var(--border2);border-radius:6px;color:var(--gold3);font-size:16px;padding:8px;min-height:40px;margin-bottom:10px;word-break:break-all;">—</div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-bottom:8px">
+      <button class="mbtn" style="font-size:11px" onclick="qmemoPreset('CZ')">CZ</button>
+      <button class="mbtn" style="font-size:11px" onclick="qmemoPreset('前兆')">前兆</button>
+      <button class="mbtn" style="font-size:11px" onclick="qmemoPreset('周期')">周期</button>
+      <button class="mbtn" style="font-size:11px" onclick="qmemoPreset('ST')">ST</button>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-bottom:8px">
+      <button class="mbtn" style="font-size:16px;padding:8px" onclick="qmemoNk('1')">1</button>
+      <button class="mbtn" style="font-size:16px;padding:8px" onclick="qmemoNk('2')">2</button>
+      <button class="mbtn" style="font-size:16px;padding:8px" onclick="qmemoNk('3')">3</button>
+      <button class="mbtn" style="font-size:16px;padding:8px" onclick="qmemoNk('4')">4</button>
+      <button class="mbtn" style="font-size:16px;padding:8px" onclick="qmemoNk('5')">5</button>
+      <button class="mbtn" style="font-size:16px;padding:8px" onclick="qmemoNk('6')">6</button>
+      <button class="mbtn" style="font-size:16px;padding:8px" onclick="qmemoNk('7')">7</button>
+      <button class="mbtn" style="font-size:16px;padding:8px" onclick="qmemoNk('8')">8</button>
+      <button class="mbtn" style="font-size:16px;padding:8px" onclick="qmemoNk('9')">9</button>
+      <button class="mbtn mbo" style="font-size:13px;padding:8px" onclick="qmemoNk('del')">⌫</button>
+      <button class="mbtn" style="font-size:16px;padding:8px" onclick="qmemoNk('0')">0</button>
+      <button class="mbtn mbo" style="font-size:13px;padding:8px" onclick="qmemoNk('clr')">CLR</button>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+      <button class="mbtn mbo" style="font-size:12px" onclick="closeMo('qmemo-mo')">キャンセル</button>
+      <button class="mbtn" style="background:#0e200e;color:#80e880;border:1px solid var(--green)" onclick="qmemoCommit()">追加</button>
+    </div>
+  </div>
+</div>
+
+<!-- RB昇格モーダル -->
+
+<div class="mo" id="rb-mo">
+  <div class="md">
+    <h3>⬛ 駿城ボーナス</h3>
+    <p style="font-size:13px;color:var(--text);margin-bottom:14px">ST昇格した？</p>
+    <div class="mdb">
+      <button class="mbtn" style="background:#0e200e;color:#80e880;border:1px solid var(--green);font-size:14px" onclick="rbResult(true)">✅ ST昇格</button>
+      <button class="mbtn mbo" onclick="rbResult(false)">❌ 外れ</button>
+    </div>
+  </div>
+</div>
+
+<!-- リセットモーダル -->
+
+<div class="mo" id="rmo">
+  <div class="md">
+    <h3>⚠ リセット確認</h3><p style="font-size:13px;color:var(--text);margin-bottom:14px">全データを削除します。</p>
+    <div class="mdb">
+      <button class="mbtn" onclick="closeM()">キャンセル</button>
+      <button class="mbtn mbo" onclick="doReset()">リセット</button>
+    </div>
+  </div>
+</div>
+
+<!-- テンキーパネル -->
+
+<div id="nk-panel">
+  <div class="nk-disp" id="nk-disp">—</div>
+  <div class="nk-grid">
+    <button class="nkb" onclick="nkNum('1')">1</button><button class="nkb" onclick="nkNum('2')">2</button><button class="nkb" onclick="nkNum('3')">3</button>
+    <button class="nkb" onclick="nkNum('4')">4</button><button class="nkb" onclick="nkNum('5')">5</button><button class="nkb" onclick="nkNum('6')">6</button>
+    <button class="nkb" onclick="nkNum('7')">7</button><button class="nkb" onclick="nkNum('8')">8</button><button class="nkb" onclick="nkNum('9')">9</button>
+    <button class="nkb del" onclick="nkDel()">⌫</button><button class="nkb" onclick="nkNum('0')">0</button><button class="nkb ok" onclick="nkOk()">確定</button>
+  </div>
+</div>
+
+<script>
+const CY=['①','②','③','④','⑤','⑥'];
+const nm={m:'無名',k:'カバ',i:'生駒'};
+let bellCount=0;
+let stState={ren:'',mai:'',target:null,char:null,nkType:null,nkVal:''};
+
+function fresh(){return{
+  m:{syms:[],pt:0,lit:0,tot:0,carry:false,prevPts:[],carryPt:0,hikaku:false},
+  k:{syms:[],pt:0,lit:0,tot:0,carry:false,prevPts:[],cyc:1,hikaku:false},
+  i:{syms:[],pt:0,lit:0,tot:0,carry:false,prevPts:[],carryPt:0,hikaku:false},
+  cycle:1,bonusNum:0,ph:[],log:[],douranIdx:0,lastDouran:null,
+  memos:[]
+};}
+let S=fresh();
+
+function startNewBlock(){
+  S.bonusNum++;
+  const mPt=S.m.carryPt,iPt=S.i.carryPt;
+  if(mPt>0) S.m.syms=[{sym:'('+mPt+')',pt:0,single:false,lit:false,carry:true}];
+  if(iPt>0) S.i.syms=[{sym:'('+iPt+')',pt:0,single:false,lit:false,carry:true}];
+  S.m.pt=mPt;S.i.pt=iPt;
+  S.m.carryPt=0;S.i.carryPt=0;
+  S.k.cyc=1;S.k.prevPts=[];S.k.pt=0;S.k.syms=[];
+  S.log.push('');S.log.push('【'+S.bonusNum+'】');
+}
+function endBlock(stRen,stMai){
+  S.m.carryPt=S.m.pt;
+  S.i.carryPt=S.i.pt;
+  S.log.push('↓ST');
+  if(stRen||stMai) S.log.push([stRen?stRen+'連':'',stMai?stMai+'枚':''].filter(Boolean).join(' '));
+}
+
+let bellCount2=0;
+function addBell(){
+  bellCount++;
+  document.getElementById('bell-count').textContent=bellCount+'回';
+  renderBell();saveState();
+}
+function renderBell(){
+  const g=parseInt(document.getElementById('total-g-input')?.value)||0;
+  document.getElementById('rate-bell-count').textContent=bellCount;
+  if(g>0&&bellCount>0){
+    document.getElementById('bell-rate-disp').textContent='1/'+(g/bellCount).toFixed(1);
+  } else {
+    document.getElementById('bell-rate-disp').textContent='—';
+  }
+}
+
+function openSTPanel(c){
+  stState={ren:'',mai:'',target:c,char:c,nkType:null,nkVal:''};
+  document.getElementById('st-ren-disp').textContent='—';
+  document.getElementById('st-mai-disp').textContent='—';
+  document.getElementById('st-panel').classList.add('open');
+}
+function closeSTPanel(){
+  document.getElementById('st-panel').classList.remove('open');
+  document.getElementById('st-nk-panel').classList.remove('open');
+}
+function openSTNK(type){
+  stState.nkType=type;stState.nkVal='';
+  document.getElementById('st-nk-disp').textContent='—';
+  document.getElementById('st-nk-panel').classList.add('open');
+}
+function stNkNum(n){if(stState.nkVal.length>=5)return;stState.nkVal+=n;document.getElementById('st-nk-disp').textContent=stState.nkVal;}
+function stNkDel(){stState.nkVal=stState.nkVal.slice(0,-1);document.getElementById('st-nk-disp').textContent=stState.nkVal||'—';}
+function stNkOk(){
+  const v=stState.nkVal;
+  if(stState.nkType==='ren'){stState.ren=v;document.getElementById('st-ren-disp').textContent=v?v+'連':'—';}
+  else{stState.mai=v;document.getElementById('st-mai-disp').textContent=v?v+'枚':'—';}
+  document.getElementById('st-nk-panel').classList.remove('open');
+}
+
+let gcycG=0,gcycNkVal='';
+function gcycNk(v){
+  if(v==='del'){gcycNkVal=gcycNkVal.slice(0,-1);}
+  else if(gcycNkVal.length<4){gcycNkVal+=v;}
+  document.getElementById('gcyc-g-disp').textContent=gcycNkVal||'—';
+}
+function openGcycMo(){
+  gcycG=0;
+  document.getElementById('gcyc-input-wrap').style.display='none';
+  document.getElementById('gcyc-g-disp').textContent='—';gcycNkVal='';
+  document.getElementById('gcyc-mo').classList.add('open');
+}
+function gcycSelect(g){
+  if(g===0){document.getElementById('gcyc-input-wrap').style.display='block';gcycG=0;}
+  else{document.getElementById('gcyc-input-wrap').style.display='none';gcycG=g;}
+}
+function gcycCommit(result){
+  if(gcycG===0) gcycG=parseInt(gcycNkVal)||0;
+  closeMo('gcyc-mo');
+  const ch=S.k;const pt=ch.pt;const cyc=S.k.cyc;
+  const cycStr=CY[Math.min(cyc-1,5)];
+  const ss=ch.syms.filter(s=>!s.carry).map(s=>s.sym).join('');
+  if(result==='miss'){
+    const gLabel=gcycG?'('+gcycG+'G)':'';
+    S.log.push('カバ'+ss+cycStr+gLabel+'('+pt+')🔵❌');
+    ch.syms=[];ch.pt=0;ch.carry=false;S.k.cyc++;
+    render();upEx();saveState();
+  } else {
+    const icon=result==='bb'?'🟦':'⬛';
+    const gLabel=gcycG?'('+gcycG+'G)':'';
+    S.log.push('カバ'+ss+cycStr+gLabel+'('+pt+')🔵'+icon);
+    ['m','i'].forEach(x=>{
+      const xs=S[x];
+      xs.carryPt=xs.pt;
+      if(xs.syms.length>0){
+        const xss=xs.syms.filter(s=>!s.carry).map(s=>s.sym).join('');
+        const xcarry=xs.syms.find(s=>s.carry)?xs.syms.find(s=>s.carry).sym:'';
+        const xpt=xs.pt>0?'('+xs.pt+')':'';
+        if(xss) S.log.push(nm[x]+xcarry+xss+xpt);
+      }
+      xs.syms=[];xs.pt=0;xs.carry=false;
+    });
+    ch.syms=[];ch.pt=0;ch.carry=false;S.k.cyc=1;
+    render();upEx();saveState();
+    if(result==='rb'){rbChar='k';document.getElementById('rb-mo').classList.add('open');}
+    else openSTPanel('k');
+  }
+}
+
+let qmemoVal='';
+function openQuickMemo(){qmemoVal='';document.getElementById('qmemo-disp').textContent='—';document.getElementById('qmemo-mo').classList.add('open');}
+function qmemoPreset(txt){qmemoVal+=txt;document.getElementById('qmemo-disp').textContent=qmemoVal||'—';}
+function qmemoNk(v){
+  if(v==='del') qmemoVal=qmemoVal.slice(0,-1);
+  else if(v==='clr') qmemoVal='';
+  else qmemoVal+=v;
+  document.getElementById('qmemo-disp').textContent=qmemoVal||'—';
+}
+function qmemoCommit(){
+  if(!qmemoVal){closeMo('qmemo-mo');return;}
+  S.log.push('📝'+qmemoVal);
+  closeMo('qmemo-mo');
+  render();upEx();saveState();
+}
+
+function closeMo(id){document.getElementById(id).classList.remove('open');}
+
+let rbChar=null;
+function rbModal(c){rbChar=c;document.getElementById('rb-mo').classList.add('open');}
+function rbResult(win){
+  document.getElementById('rb-mo').classList.remove('open');
+  if(win){res(rbChar,'⬛','RB');openSTPanel(rbChar);}
+  else res(rbChar,'⬛❌','RB外れ');
+}
+
+function commitST(){
+  const mCarry=S.m.carryPt,iCarry=S.i.carryPt;
+  endBlock(stState.ren,stState.mai);
+  if(mCarry>0) S.m.carryPt=mCarry;
+  if(iCarry>0) S.i.carryPt=iCarry;
+  startNewBlock();
+  closeSTPanel();
+  render();upEx();saveState();
+}
+
+function add(c,sym,pt,single,lit){
+  const ch=S[c];
+  let actualSym=sym,actualSingle=single,actualLit=lit;
+  if(ch.hikaku&&single&&(sym==='○'||sym==='●')){
+    actualSym='['+sym+']';actualSingle=false;actualLit=false;
+  }
+  ch.syms.push({sym:actualSym,pt,single:actualSingle,lit:actualLit});
+  ch.pt+=pt;
+  if(actualSingle){ch.tot++;if(actualLit)ch.lit++;}
+  render();saveState();
+}
+function undo(c){
+  const ch=S[c];if(!ch.syms.length)return;
+  const l=ch.syms.pop();ch.pt-=l.pt;
+  if(l.single){ch.tot--;if(l.lit)ch.lit--;}
+  render();saveState();
+}
+
+function toggleHikaku(c){
+  S[c].hikaku=!S[c].hikaku;
+  const btn=document.getElementById('hk-'+c);
+  btn.textContent='発光中 '+(S[c].hikaku?'ON':'OFF');
+  btn.classList.toggle('on',S[c].hikaku);
+  saveState();
+}
+
+function removeLitIfLast(c){
+  const ch=S[c];
+  if(ch.syms.length>0){
+    const last=ch.syms[ch.syms.length-1];
+    if(last.lit){ch.lit--;last.lit=false;}
+  }
+}
+function kPtStr(){const all=[...S.k.prevPts,S.k.pt].filter(v=>v>0);return all.length?'.'+all.join(';'):'';}
+
+const DOURAN=['①','②','③','④','⑤'];
+function getDouranLabel(c){
+  if(S.lastDouran!==c){S.douranIdx=0;S.lastDouran=c;}
+  const l=DOURAN[S.douranIdx%DOURAN.length];
+  S.douranIdx++;return l;
+}
+
+function pct(l,t){return t>0?(l/t*100).toFixed(1)+'%':'—';}
+
+function res(c,emoji,label){
+  const ch=S[c];
+  removeLitIfLast(c);
+  const sup=ch.syms.some(s=>s.sym==='＊');
+  const ss=ch.syms.filter(s=>!s.carry).map(s=>s.sym).join('');
+  const carryStr=ch.syms.find(s=>s.carry)?ch.syms.find(s=>s.carry).sym:'';
+  const pt=ch.pt;
+  if((c==='m'||c==='i')&&!sup&&pt>0&&(emoji==='🟥'||emoji==='🟩'||emoji==='🟪'))
+    S.ph.push({c,pt,emoji,cycle:S.cycle});
+  const ptStr=c==='k'?kPtStr():(pt>0?'.'+pt:'');
+  const cycStr=c==='k'?CY[Math.min(S.k.cyc-1,5)]:'';
+  let line=`${nm[c]}${carryStr}${ch.carry&&!carryStr?'→':''}${ss}${ptStr}`;
+  if(emoji==='🟪'){const dl=getDouranLabel(c);line+=`${emoji}銅藍${dl}`;}
+  else line+=emoji;
+  if(cycStr)line+=cycStr;
+  S.log.push(line);
+  if(c==='k')ch.prevPts.push(pt);
+  ch.syms=[];ch.pt=0;ch.carry=false;
+  if(c==='k')S.k.cyc++;
+  if(emoji==='🟦'||emoji==='⬛'){
+    ['m','k','i'].forEach(x=>{
+      if(x!==c){
+        const xs=S[x];
+        xs.carryPt=xs.pt;
+        if(xs.syms.length>0){
+          const xss=xs.syms.filter(s=>!s.carry).map(s=>s.sym).join('');
+          const xcarry=xs.syms.find(s=>s.carry)?xs.syms.find(s=>s.carry).sym:'';
+          const xpt=xs.pt>0?`(${xs.pt})`:'';
+          if(xss) S.log.push(`${nm[x]}${xcarry}${xss}${xpt}`);
+          xs.syms=[];xs.pt=0;xs.carry=false;
+        }
+      }
+    });
+    render();upEx();saveState();
+    if(emoji==='⬛'){rbChar=c;document.getElementById('rb-mo').classList.add('open');}
+    else openSTPanel(c);
+    return;
+  }
+  render();upEx();saveState();
+}
+
+function st(c){
+  const ch=S[c];
+  const ss=ch.syms.filter(s=>!s.carry).map(s=>s.sym).join('');
+  const carryStr=ch.syms.find(s=>s.carry)?ch.syms.find(s=>s.carry).sym:'';
+  const ptStr=c==='k'?kPtStr():(ch.pt>0?'.'+ch.pt:'');
+  S.log.push(`${nm[c]}${carryStr}${ss}${ptStr}→`);
+  ch.carry=true;ch.syms=[];
+  render();upEx();saveState();
+  openSTPanel(c);
+}
+
+let cz=null;
+function openICZ(){cz={games:[],life:4,max:4};renderCZ();document.getElementById('icz').classList.add('open');}
+function closeICZ(){document.getElementById('icz').classList.remove('open');cz=null;}
+function czRole(label,emoji,type){
+  if(!cz)return;
+  if(type==='recover'){cz.life=cz.max;}
+  else if(type==='invincible'){cz.invincible=true;}
+  else if(type==='lose'){if(!cz.invincible&&cz.life>0)cz.life--;}
+  else if(type==='hold'){}
+  cz.games.push({label,emoji,life:cz.life,invincible:!!cz.invincible});
+  if(type!=='invincible')cz.invincible=false;
+  renderCZ();
+}
+function czLifeAdj(d){if(!cz)return;cz.life=Math.max(0,Math.min(cz.max+2,cz.life+d));renderCZ();}
+function czUndo(){if(!cz||!cz.games.length)return;cz.games.pop();const last=cz.games[cz.games.length-1];if(last)cz.life=last.life;else cz.life=cz.max;renderCZ();}
+function renderCZ(){
+  if(!cz)return;
+  const lf=document.getElementById('czlf');
+  lf.innerHTML='';
+  for(let i=0;i<cz.max;i++){
+    const d=document.createElement('div');
+    d.className='czlfi'+(i<cz.life?' on':'');
+    d.textContent=i<cz.life?'💚':'🖤';
+    lf.appendChild(d);
+  }
+  if(cz.invincible){const d=document.createElement('div');d.className='czlfi on';d.textContent='🛡';lf.appendChild(d);}
+  const s=document.getElementById('czs');
+  s.innerHTML=cz.games.map(g=>`<div class="czse">${g.emoji} ${g.label} ${'💚'.repeat(g.life)}${g.invincible?'🛡':''}</div>`).join('');
+  s.scrollTop=s.scrollHeight;
+}
+function czEnd(win){
+  const ch=S.i;
+  const ss=ch.syms.filter(s=>!s.carry).map(s=>s.sym).join('');
+  const carryStr=ch.syms.find(s=>s.carry)?ch.syms.find(s=>s.carry).sym:'';
+  const gl=cz?cz.games.length:0;
+  const life=cz?cz.life:0;
+  if(win&&(ch.pt>0||ss)){
+    S.ph.push({c:'i',pt:ch.pt,emoji:'🟩',cycle:S.cycle});
+  }
+  S.log.push(`${nm.i}${carryStr}${ch.carry&&!carryStr?'→':''}${ss}${ch.pt>0?'.'+ch.pt:''}🟩${win?'⭕️':'❌'}[${gl}残${life}]`);
+  ch.syms=[];ch.pt=0;ch.carry=false;
+  closeICZ();exEdited=false;render();upEx();saveState();
+}
+
+function kPtMiss(){
+  const ch=S.k;const cyc=S.k.cyc;
+  const cycStr=CY[Math.min(cyc-1,5)];
+  const ss=ch.syms.filter(s=>!s.carry).map(s=>s.sym).join('');
+  const ptStr=ch.pt>0?'.'+ch.pt:'';
+  S.log.push('カバ'+cycStr+ss+ptStr+'🔵❌');
+  ch.syms=[];ch.pt=0;ch.carry=false;S.k.cyc++;
+  render();upEx();saveState();
+}
+
+let nkVal='',nkTarget=null;
+function openNK(){nkTarget={type:'new'};nkVal='';document.getElementById('nk-disp').textContent='—';document.getElementById('nk-panel').classList.add('open');}
+function closeNK(){document.getElementById('nk-panel').classList.remove('open');}
+function nkNum(n){if(nkVal.length>=4)return;nkVal+=n;document.getElementById('nk-disp').textContent=nkVal;}
+function nkDel(){nkVal=nkVal.slice(0,-1);document.getElementById('nk-disp').textContent=nkVal||'—';}
+function nkOk(){closeNK();}
+function renderMemo(){}
+function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function addSTSep(){}
+function delMemo(i){}
+function editMemoTxt(i,v){}
+
+function render(){
+  ['m','k','i'].forEach(c=>{
+    const ch=S[c];
+    const ss=ch.syms.map(s=>s.sym).join('');
+    document.getElementById('l'+c).textContent=ss?(ch.carry?'→':'')+ss:(ch.carry?'→（引継中）':'—');
+    if(c==='k'){
+      const all=[...ch.prevPts,ch.pt].filter(v=>v>0);
+      document.getElementById('lkp').textContent=all.length?all.join(';')+'pt':'';
+      document.getElementById('k-pt').textContent=all.join(';')||0;
+    } else {
+      document.getElementById('l'+c+'p').textContent=ch.pt>0?ch.pt+'pt':'';
+      document.getElementById(c+'-pt').textContent=ch.pt;
+    }
+    document.getElementById(c+'-lit').textContent=ch.lit;
+    document.getElementById(c+'-tot').textContent=ch.tot;
+    const btn=document.getElementById('hk-'+c);
+    if(btn){btn.textContent='発光中 '+(ch.hikaku?'ON':'OFF');btn.classList.toggle('on',ch.hikaku);}
+  });
+  document.getElementById('k-cyc').textContent=CY[Math.min(S.k.cyc-1,5)];
+  document.getElementById('sb-c').textContent=CY[Math.min(S.cycle-1,5)];
+  document.getElementById('sb-m').textContent=S.m.pt;
+  document.getElementById('sb-k').textContent=S.k.pt;
+  document.getElementById('sb-i').textContent=S.i.pt;
+  const miL=S.m.lit+S.i.lit,miT=S.m.tot+S.i.tot;
+  [['m',S.m.lit,S.m.tot],['i',S.i.lit,S.i.tot],['k',S.k.lit,S.k.tot],['mi',miL,miT]].forEach(([id,l,t])=>{
+    document.getElementById(`r-${id}-l`).textContent=l;
+    document.getElementById(`r-${id}-t`).textContent=t;
+    document.getElementById(`r-${id}-p`).textContent=pct(l,t);
+  });
+  document.getElementById('ex-mi').textContent=pct(miL,miT);
+  [['m','m'],['i','i'],['k','k']].forEach(([c2])=>{
+    const h=S.ph.filter(x=>x.c===c2&&x.pt>0);
+    const n=h.length,sum=h.reduce((s,x)=>s+x.pt,0);
+    document.getElementById('avg-'+c2+'-n').textContent=n;
+    document.getElementById('avg-'+c2+'-sum').textContent=n?sum:'—';
+    document.getElementById('avg-'+c2+'-v').textContent=n?(sum/n).toFixed(1)+'pt':'—';
+  });
+  const miH=S.ph.filter(h=>h.c==='m'||h.c==='i');
+  if(miH.length){
+    const avg=(miH.reduce((s,h)=>s+h.pt,0)/miH.length).toFixed(1);
+    document.getElementById('ex-avg').textContent=`${avg}pt (n=${miH.length})`;
+  }
+}
+
+let exEdited=false;
+function upEx(){
+  if(exEdited)return;
+  let out='カバネリ海門\n\n';
+  if(S.log.length){
+    const mainLog=S.log.filter(l=>!l.startsWith('📝'));
+    const memoLog=S.log.filter(l=>l.startsWith('📝')).map(l=>l.replace(/^📝/,''));
+    if(mainLog.length) out+='◾️チャンス目\n'+mainLog.join('\n');
+    if(memoLog.length) out+='\n\n'+memoLog.join('\n');
+  }
+  if(bellCount>0){
+    const g=parseInt(document.getElementById('total-g-input')?.value)||0;
+    out+='\n\n◾️ベル '+bellCount+'回';
+    if(g>0) out+=' / 総'+g+'G → 1/'+(g/bellCount).toFixed(1);
+  }
+  document.getElementById('lo').value=out;
+}
+
+function sw(n){
+  ['record','rate','export'].forEach(x=>{
+    document.getElementById('tab-'+x).style.display=x===n?'block':'none';
+    document.getElementById('t-'+x).classList.toggle('active',x===n);
+  });
+  if(n==='export')upEx();
+}
+
+function copyLog(){
+  let out='カバネリ海門\n\n';
+  if(S.log.length){
+    const mainLog=S.log.filter(l=>!l.startsWith('📝'));
+    const memoLog=S.log.filter(l=>l.startsWith('📝')).map(l=>l.replace(/^📝/,''));
+    if(mainLog.length) out+='◾️チャンス目\n'+mainLog.join('\n');
+    if(memoLog.length) out+='\n\n'+memoLog.join('\n');
+  }
+  if(bellCount>0){
+    const g=parseInt(document.getElementById('total-g-input')?.value)||0;
+    out+='\n\n◾️ベル\n'+bellCount+'回';
+    if(g>0)out+=' / 総'+g+'G → 1/'+(g/bellCount).toFixed(1);
+  }
+  document.getElementById('lo').value=out;
+  navigator.clipboard?.writeText(out).then(()=>{
+    const b=document.querySelector('.cpb');b.textContent='✅ コピー完了';
+    setTimeout(()=>b.textContent='📋 コピー',1500);
+  });
+}
+
+function openM(){document.getElementById('rmo').classList.add('open');}
+function closeM(){document.getElementById('rmo').classList.remove('open');}
+function doReset(){
+  localStorage.removeItem('kb2_S');localStorage.removeItem('kb2_bell');localStorage.removeItem('kb2_totalg');
+  bellCount=0;exEdited=false;S=fresh();closeM();
+  S.bonusNum=1;S.log.push('【1】');
+  render();upEx();saveState();
+}
+
+function saveState(){
+  try{
+    localStorage.setItem('kb2_S',JSON.stringify(S));
+    localStorage.setItem('kb2_bell',String(bellCount));
+    const tg=document.getElementById('total-g-input');
+    if(tg)localStorage.setItem('kb2_totalg',tg.value);
+  }catch(e){}
+}
+
+(function(){
+  try{
+    const saved=localStorage.getItem('kb2_S');
+    if(saved){
+      S=JSON.parse(saved);
+      S.memos=[];
+      ['m','i'].forEach(x=>{if(S[x].carryPt===undefined)S[x].carryPt=0;if(S[x].hikaku===undefined)S[x].hikaku=false;});
+      if(S.k.hikaku===undefined)S.k.hikaku=false;
+      if(!S.bonusNum)S.bonusNum=1;
+      bellCount=parseInt(localStorage.getItem('kb2_bell'))||0;
+      const tg=document.getElementById('total-g-input');
+      const savedG=localStorage.getItem('kb2_totalg');
+      if(tg&&savedG)tg.value=savedG;
+      render();upEx();
+      document.getElementById('bell-count').textContent=bellCount+'回';
+      renderBell();
+      return;
+    }
+  }catch(e){}
+  S.bonusNum=1;S.log.push('【1】');
+  render();upEx();saveState();
+})();
+</script>
+
+</body>
+</html>
