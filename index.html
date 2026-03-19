@@ -296,6 +296,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Hiragi
         <div class="esr"><span class="esl">無名+生駒発光率：</span><span class="esv" id="ex-mi">—</span></div>
         <div class="esr"><span class="esl">CZ到達PT平均：</span><span class="esv" id="ex-avg">—</span></div>
       </div>
+      <button onclick="openSaveLoad()" style="width:100%;margin-top:8px;padding:10px;background:#0a1828;border:1px solid #204060;border-radius:8px;color:#4080c0;font-size:13px;cursor:pointer;">💾 セーブ／ロード</button>
       <button onclick="openM()" style="width:100%;margin-top:8px;padding:10px;background:#1a0808;border:1px solid #4a1010;border-radius:8px;color:#884040;font-size:13px;cursor:pointer;">🗑 全データリセット</button>
     </div>
   </div>
@@ -461,8 +462,31 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Hiragi
   </div>
 </div>
 
-<!-- テンキーパネル -->
+<!-- セーブ/ロードモーダル -->
 
+<div class="mo" id="sl-mo">
+  <div class="md" style="max-height:90vh">
+    <h3>💾 セーブ／ロード</h3>
+    <div id="sl-slots"></div>
+    <button class="mbtn mbo" style="margin-top:10px;font-size:12px;width:100%" onclick="closeMo('sl-mo')">閉じる</button>
+  </div>
+</div>
+
+<!-- スロット名入力モーダル -->
+
+<div class="mo" id="slname-mo">
+  <div class="md">
+    <h3>💾 セーブ名を入力</h3>
+    <input id="slname-input" type="text" maxlength="20"
+      style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:6px;color:var(--gold3);font-size:16px;padding:8px;margin-bottom:12px;outline:none"
+      placeholder="例：台番1234">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+      <button class="mbtn mbo" onclick="closeMo('slname-mo')">キャンセル</button>
+      <button class="mbtn" style="background:#0a1828;color:#80c0f8;border:1px solid #204060" onclick="slNameOk()">セーブ</button>
+    </div>
+  </div>
+</div>
+<!-- テンキーパネル -->
 <div id="nk-panel">
   <div class="nk-disp" id="nk-disp">—</div>
   <div class="nk-grid">
@@ -882,9 +906,87 @@ function copyLog(){
   });
 }
 
+
+// ===== セーブ/ロード =====
+const SL_PREFIX='kb2_slot_';
+const SL_COUNT=5;
+let slTargetSlot=null;
+
+function openSaveLoad(){
+  renderSlots();
+  document.getElementById('sl-mo').classList.add('open');
+}
+
+function renderSlots(){
+  const el=document.getElementById('sl-slots');
+  let html='';
+  for(let i=1;i<=SL_COUNT;i++){
+    let saved=null;
+    try{saved=JSON.parse(localStorage.getItem(SL_PREFIX+i));}catch(e){}
+    const name=saved?saved.name:'空き';
+    const date=saved?saved.date:'';
+    html+=`<div style="background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:10px;margin-bottom:8px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <span style="font-size:13px;color:var(--gold3);font-weight:bold">${saved?name:'スロット'+i}</span>
+        <span style="font-size:10px;color:var(--dim2)">${date}</span>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button class="mbtn" style="font-size:12px;padding:8px;background:#0a1828;color:#80c0f8;border:1px solid #204060" onclick="slSave(${i})">💾 セーブ</button>
+        ${saved?`<button class="mbtn" style="font-size:12px;padding:8px;background:#081808;color:#80e880;border:1px solid var(--green)" onclick="slLoad(${i})">📂 ロード</button>`:'<button class="mbtn" style="font-size:12px;padding:8px;opacity:.3" disabled>📂 ロード</button>'}
+        ${saved?`<button class="mbtn mbo" style="font-size:12px;padding:8px" onclick="slDelete(${i})">🗑</button>`:''}
+      </div>
+    </div>`;
+  }
+  el.innerHTML=html;
+}
+
+function slSave(i){
+  slTargetSlot=i;
+  const saved=JSON.parse(localStorage.getItem(SL_PREFIX+i)||'null');
+  document.getElementById('slname-input').value=saved?saved.name:'';
+  closeMo('sl-mo');
+  document.getElementById('slname-mo').classList.add('open');
+  setTimeout(()=>document.getElementById('slname-input').focus(),100);
+}
+
+function slNameOk(){
+  const name=document.getElementById('slname-input').value.trim()||'スロット'+slTargetSlot;
+  const now=new Date();
+  const date=`${now.getMonth()+1}/${now.getDate()} ${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')}`;
+  const data={name,date,S:JSON.stringify(S),bell:bellCount};
+  localStorage.setItem(SL_PREFIX+slTargetSlot,JSON.stringify(data));
+  closeMo('slname-mo');
+  openSaveLoad();
+}
+
+function slLoad(i){
+  try{
+    const data=JSON.parse(localStorage.getItem(SL_PREFIX+i));
+    if(!data)return;
+    
+    S=JSON.parse(data.S);
+    S.memos=[];
+    ['m','i'].forEach(x=>{if(S[x].carryPt===undefined)S[x].carryPt=0;if(S[x].hikaku===undefined)S[x].hikaku=false;});
+    if(S.k.hikaku===undefined)S.k.hikaku=false;
+    bellCount=data.bell||0;
+    exEdited=false;
+    document.getElementById('bell-count').textContent=bellCount+'回';
+    renderBell();
+    saveState();
+    render();upEx();
+    closeMo('sl-mo');
+  }catch(e){alert('ロード失敗');}
+}
+
+function slDelete(i){
+  
+  localStorage.removeItem(SL_PREFIX+i);
+  renderSlots();
+}
 function openM(){document.getElementById('rmo').classList.add('open');}
 function closeM(){document.getElementById('rmo').classList.remove('open');}
 function doReset(){
+  // セーブスロットは消さない
   localStorage.removeItem('kb2_S');localStorage.removeItem('kb2_bell');localStorage.removeItem('kb2_totalg');
   bellCount=0;exEdited=false;S=fresh();closeM();
   S.bonusNum=1;S.log.push('【1】');
