@@ -172,7 +172,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Hiragi
             <button class="csb" onclick="add('m','＊',0,false,false)"><span class="s s7 sstar">＊</span><span class="csn">超高確</span><span class="csp">除外</span></button>
           </div>
           <button class="hkbtn" id="hk-m" onclick="toggleHikaku('m')">発光中 OFF</button>
-          <button class="cub" onclick="undo('m')">↩</button>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:2px">
+            <button class="cub" onclick="undo('m')">↩</button>
+            <button class="cub" onclick="kLog('/','m')" style="color:#ff8080;border-left:1px solid var(--border)">/</button>
+            <button class="cub" onclick="kLog('↓','m')" style="color:#ff8080;border-left:1px solid var(--border)">↓</button>
+          </div>
           <div class="crr">
             <button class="crm r-mz" onclick="res('m','🟥','無名CZ')">🟥<br><span class="crn">無名CZ</span></button>
             <button class="crm r-dz" onclick="res('m','🟪','銅藍')">🟪<br><span class="crn">銅藍</span></button>
@@ -185,7 +189,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Hiragi
         <div class="cc">
           <div class="cch k">🔵 カバネ</div>
           <div class="cpt"><span id="k-pt">0</span>pt</div>
-          <div class="clt">周期<b id="k-cyc">①</b> 発光<b id="k-lit">0</b>/<b id="k-tot">0</b></div>
+          <div class="clt" style="font-size:10px">周期<b id="k-cyc">①</b> 発光<b id="k-lit">0</b>/<b id="k-tot">0</b></div>
           <div class="csg">
             <button class="csb" onclick="add('k','○',1,true,false)"><span class="s s0">○</span><span class="csn">通常</span><span class="csp">1</span></button>
             <button class="csb" onclick="add('k','◎',15,true,true)"><span class="s s1">◎</span><span class="csn">発光</span><span class="csp">15</span></button>
@@ -197,7 +201,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Hiragi
             <button class="csb" onclick="add('k','＊',0,false,false)"><span class="s s7 sstar">＊</span><span class="csn">超高確</span><span class="csp">除外</span></button>
           </div>
           <button class="hkbtn" id="hk-k" onclick="toggleHikaku('k')">発光中 OFF</button>
-          <button class="cub" onclick="undo('k')">↩</button>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:2px">
+            <button class="cub" onclick="undo('k')">↩</button>
+            <button class="cub" onclick="kLog('/','k')" style="color:#88ccff;border-left:1px solid var(--border)">/</button>
+            <button class="cub" onclick="kLog('↓','k')" style="color:#88ccff;border-left:1px solid var(--border)">↓</button>
+          </div>
           <div class="crr">
             <button class="crs r-rb" onclick="rbModal('k')">⬛<br><span class="crn">RB</span></button>
             <button class="crs r-bb" onclick="res('k','🟦','BB')">🟦<br><span class="crn">BB</span></button>
@@ -222,7 +230,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Hiragi
             <button class="csb" onclick="add('i','＊',0,false,false)"><span class="s s7 sstar">＊</span><span class="csn">超高確</span><span class="csp">除外</span></button>
           </div>
           <button class="hkbtn" id="hk-i" onclick="toggleHikaku('i')">発光中 OFF</button>
-          <button class="cub" onclick="undo('i')">↩</button>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:2px">
+            <button class="cub" onclick="undo('i')">↩</button>
+            <button class="cub" onclick="kLog('/','i')" style="color:#80e880;border-left:1px solid var(--border)">/</button>
+            <button class="cub" onclick="kLog('↓','i')" style="color:#80e880;border-left:1px solid var(--border)">↓</button>
+          </div>
           <div class="crr">
             <button class="crm r-iz" onclick="openICZ()">🟩<br><span class="crn">生駒CZ</span></button>
             <button class="crm r-dz" onclick="res('i','🟪','銅藍')">🟪<br><span class="crn">銅藍</span></button>
@@ -298,6 +310,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Hiragi
       </div>
       <button onclick="openSaveLoad()" style="width:100%;margin-top:8px;padding:10px;background:#0a1828;border:1px solid #204060;border-radius:8px;color:#4080c0;font-size:13px;cursor:pointer;">💾 セーブ／ロード</button>
       <button onclick="openM()" style="width:100%;margin-top:8px;padding:10px;background:#1a0808;border:1px solid #4a1010;border-radius:8px;color:#884040;font-size:13px;cursor:pointer;">🗑 全データリセット</button>
+      <div style="text-align:center;margin-top:10px;font-size:10px;color:var(--dim2)">カバネリ2 v1.0</div>
     </div>
   </div>
   <div id="sbar">
@@ -409,27 +422,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Hiragi
 <div class="mo" id="qmemo-mo">
   <div class="md">
     <h3>📝 メモを追加</h3>
-    <div id="qmemo-disp" style="background:var(--bg3);border:1px solid var(--border2);border-radius:6px;color:var(--gold3);font-size:16px;padding:8px;min-height:40px;margin-bottom:10px;word-break:break-all;">—</div>
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-bottom:8px">
-      <button class="mbtn" style="font-size:11px" onclick="qmemoPreset('CZ')">CZ</button>
-      <button class="mbtn" style="font-size:11px" onclick="qmemoPreset('前兆')">前兆</button>
-      <button class="mbtn" style="font-size:11px" onclick="qmemoPreset('周期')">周期</button>
-      <button class="mbtn" style="font-size:11px" onclick="qmemoPreset('ST')">ST</button>
-    </div>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-bottom:8px">
-      <button class="mbtn" style="font-size:16px;padding:8px" onclick="qmemoNk('1')">1</button>
-      <button class="mbtn" style="font-size:16px;padding:8px" onclick="qmemoNk('2')">2</button>
-      <button class="mbtn" style="font-size:16px;padding:8px" onclick="qmemoNk('3')">3</button>
-      <button class="mbtn" style="font-size:16px;padding:8px" onclick="qmemoNk('4')">4</button>
-      <button class="mbtn" style="font-size:16px;padding:8px" onclick="qmemoNk('5')">5</button>
-      <button class="mbtn" style="font-size:16px;padding:8px" onclick="qmemoNk('6')">6</button>
-      <button class="mbtn" style="font-size:16px;padding:8px" onclick="qmemoNk('7')">7</button>
-      <button class="mbtn" style="font-size:16px;padding:8px" onclick="qmemoNk('8')">8</button>
-      <button class="mbtn" style="font-size:16px;padding:8px" onclick="qmemoNk('9')">9</button>
-      <button class="mbtn mbo" style="font-size:13px;padding:8px" onclick="qmemoNk('del')">⌫</button>
-      <button class="mbtn" style="font-size:16px;padding:8px" onclick="qmemoNk('0')">0</button>
-      <button class="mbtn mbo" style="font-size:13px;padding:8px" onclick="qmemoNk('clr')">CLR</button>
-    </div>
+    <input id="qmemo-input" type="text" maxlength="50"
+      style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:6px;color:var(--gold3);font-size:16px;padding:10px;margin-bottom:12px;outline:none"
+      placeholder="メモを入力...">
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
       <button class="mbtn mbo" style="font-size:12px" onclick="closeMo('qmemo-mo')">キャンセル</button>
       <button class="mbtn" style="background:#0e200e;color:#80e880;border:1px solid var(--green)" onclick="qmemoCommit()">追加</button>
@@ -618,18 +613,15 @@ function gcycCommit(result){
   }
 }
 
-let qmemoVal='';
-function openQuickMemo(){qmemoVal='';document.getElementById('qmemo-disp').textContent='—';document.getElementById('qmemo-mo').classList.add('open');}
-function qmemoPreset(txt){qmemoVal+=txt;document.getElementById('qmemo-disp').textContent=qmemoVal||'—';}
-function qmemoNk(v){
-  if(v==='del') qmemoVal=qmemoVal.slice(0,-1);
-  else if(v==='clr') qmemoVal='';
-  else qmemoVal+=v;
-  document.getElementById('qmemo-disp').textContent=qmemoVal||'—';
+function openQuickMemo(){
+  document.getElementById('qmemo-input').value='';
+  document.getElementById('qmemo-mo').classList.add('open');
+  setTimeout(()=>document.getElementById('qmemo-input').focus(),100);
 }
 function qmemoCommit(){
-  if(!qmemoVal){closeMo('qmemo-mo');return;}
-  S.log.push('📝'+qmemoVal);
+  const val=document.getElementById('qmemo-input').value.trim();
+  if(!val){closeMo('qmemo-mo');return;}
+  S.log.push('📝'+val);
   closeMo('qmemo-mo');
   render();upEx();saveState();
 }
@@ -794,6 +786,11 @@ function czEnd(win){
   closeICZ();exEdited=false;render();upEx();saveState();
 }
 
+
+function kLog(sym,c){
+  S[c].syms.push({sym,pt:0,single:false,lit:false});
+  render();saveState();
+}
 function kPtMiss(){
   const ch=S.k;const cyc=S.k.cyc;
   const cycStr=CY[Math.min(cyc-1,5)];
