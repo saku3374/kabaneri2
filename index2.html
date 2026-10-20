@@ -463,12 +463,11 @@ function addDown(){
   save();
 }
 
-// / = 前兆確認・次周期区切り（選択中のキャラ）
+// / = 前兆確認（改行なし）
 function addSlash(){
   const set=cs();
   const d=set[S.char];
   d.lines[d.lines.length-1].push('/');
-  d.lines.push([]);
   if(S.sub==='point') renderPoints();
   save();
 }
@@ -538,8 +537,11 @@ function doBack(){
 // 次セット: 🔴🟢は累計pt引き継ぎ、🔵リセット
 function nextSet(){
   const set=cs();
-  const ptRed=(set.red.carryPt||0)+calcPt(set.red);
-  const ptGreen=(set.green.carryPt||0)+calcPt(set.green);
+  // CZがあった場合はcarryPtはCZで精算済み→次セットへの持ち越しはCZ後のptのみ
+  const hasCZRed=set.red.lines.some(line=>line.some(sym=>sym.startsWith('.')&&sym.length>1));
+  const hasCZGreen=set.green.lines.some(line=>line.some(sym=>sym.startsWith('.')&&sym.length>1));
+  const ptRed=(hasCZRed?0:(set.red.carryPt||0))+calcPt(set.red);
+  const ptGreen=(hasCZGreen?0:(set.green.carryPt||0))+calcPt(set.green);
   ['red','green'].forEach(c=>{
     const d=set[c]; const pt=c==='red'?ptRed:ptGreen;
     if(pt>0) d.lines[d.lines.length-1].push(`(${pt})`);
