@@ -142,6 +142,7 @@ input:checked + .tog-sl:before { transform: translateX(22px); }
         </tr>
         <tr id="czRowRed"  style="border-bottom:1px solid #222"></tr>
         <tr id="czRowGreen" style="border-bottom:1px solid #222"></tr>
+        <tr id="czRowRedGreen" style="border-bottom:1px solid #333"></tr>
         <tr id="czRowBlue"></tr>
       </table>
       <div style="margin-top:10px;font-size:11px;color:#555">設定56：約66pt / 設定4：約75pt / 設定123：約89pt</div>
@@ -299,7 +300,7 @@ function renderAll(){
   syncCharBtns();
   syncFlashBtn();
   renderActRow();
-  document.getElementById('bellVal').textContent=cs().bell||0;
+  document.getElementById('bellVal').textContent=totalBell();
 }
 
 function renderTopTabs(){
@@ -410,13 +411,24 @@ function renderStats(){
       <td style="padding:6px 2px;text-align:right;color:#ccc">${count}</td>
       <td style="padding:6px 2px;text-align:right;color:${avgColor};font-weight:bold">${avg}${count>0?'pt':''}</td>`;
   });
+  // 🔴+🟢合算
+  const rgTotal=czData.red.total+czData.green.total;
+  const rgCount=czData.red.count+czData.green.count;
+  const rgAvg=rgCount>0?(rgTotal/rgCount).toFixed(1):'－';
+  document.getElementById('czRowRedGreen').innerHTML=`
+    <td style="padding:6px 2px;color:#888;font-size:12px">
+      <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#e44;vertical-align:middle"></span>+<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#3d3;vertical-align:middle"></span>
+    </td>
+    <td style="padding:6px 2px;text-align:right;color:#888">${rgCount>0?rgTotal:'－'}</td>
+    <td style="padding:6px 2px;text-align:right;color:#888">${rgCount}</td>
+    <td style="padding:6px 2px;text-align:right;color:${rgCount>0?'#fa0':'#555'};font-weight:bold">${rgAvg}${rgCount>0?'pt':''}</td>`;
 }
 
 function loadMemos(){
   const set=cs();
   document.getElementById('taUpper').value=set.upperMemo||'';
   document.getElementById('taLower').value=set.lowerMemo||'';
-  document.getElementById('bellVal').textContent=set.bell||0;
+  document.getElementById('bellVal').textContent=totalBell();
 }
 
 function syncCharBtns(){
@@ -474,7 +486,8 @@ function addSlash(){
 
 function togFlash(){ S.flash=!S.flash; syncFlashBtn(); }
 
-function chgBell(d){ const set=cs(); set.bell=Math.max(0,(set.bell||0)+d); document.getElementById('bellVal').textContent=set.bell; save(); }
+function totalBell(){ return S.sets.reduce((s,set)=>s+(set.bell||0),0); }
+function chgBell(d){ const set=cs(); set.bell=Math.max(0,(set.bell||0)+d); document.getElementById('bellVal').textContent=totalBell(); save(); }
 
 // CZ: 🔴🟢 .bell付加+改行
 function doCZ(){
