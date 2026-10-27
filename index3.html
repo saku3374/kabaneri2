@@ -463,7 +463,7 @@ function renderStats(){
       });
     });
   });
-  const atCount=Math.max(0,S.sets.length-1);
+  const atCount=S.sets.length;
   function probStr(count,g){ if(!g||!count) return '－'; return `1/${(g/count).toFixed(1)}`; }
   document.getElementById('probBell').innerHTML=`
     <td style="padding:6px 2px;color:#fa0">🔔ベル</td>
