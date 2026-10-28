@@ -6,7 +6,7 @@
 <title>カバネリ2</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-button{touch-action:manipulation}
+button{touch-action:manipulation;-webkit-user-select:none;user-select:none}
 html,body{height:100%;background:#0d0d0d;color:#fff;font-family:-apple-system,sans-serif}
 #app{display:flex;flex-direction:column;height:100vh;height:100dvh;overflow:hidden}
 .top-bar{display:flex;background:#111;border-bottom:1px solid #2a2a2a;min-height:44px;flex-shrink:0}
@@ -79,6 +79,8 @@ html,body{height:100%;background:#0d0d0d;color:#fff;font-family:-apple-system,sa
 .tc{padding:6px 2px}.tcr{padding:6px 2px;text-align:right}.fw{font-weight:bold}
 .dotS{display:inline-block;width:12px;height:12px;border-radius:50%;vertical-align:middle}
 .dotX{display:inline-block;width:10px;height:10px;border-radius:50%;vertical-align:middle}
+.nsb{flex:1;height:44px;border-radius:10px;color:#fff;font-size:15px;cursor:pointer}
+.ni{background:#0d0d0d;color:#fff;border:2px solid #1e3fa0;border-radius:8px;padding:8px 12px;font-size:18px;width:100%;text-align:center;outline:none}
 </style>
 </head>
 <body>
@@ -102,7 +104,9 @@ html,body{height:100%;background:#0d0d0d;color:#fff;font-family:-apple-system,sa
 <div class="sc"><div class="sh">CZ到達PT平均</div>
 <table class="tbl"><tr class="thd"><td class="tc">キャラ</td><td class="tcr">合計PT</td><td class="tcr">回数</td><td class="tcr">平均PT</td></tr>
 <tr id="czR"></tr><tr id="czG"></tr><tr id="czRG" style="border-bottom:1px solid #333"></tr><tr id="czB"></tr>
-</table></div>
+</table>
+<div class="hint" id="czFW"></div>
+</div>
 <div class="sc"><div class="sh">確率</div>
 <table class="tbl"><tr class="thd"><td class="tc">項目</td><td class="tcr">回数</td><td class="tcr">G数</td><td class="tcr">確率</td></tr>
 <tr id="pBell"></tr><tr id="pAT" style="border-top:1px solid #222"></tr><tr id="pCZ" style="border-top:1px solid #222"></tr><tr id="pUCZ" style="border-top:1px solid #222"></tr>
@@ -139,18 +143,19 @@ html,body{height:100%;background:#0d0d0d;color:#fff;font-family:-apple-system,sa
 <button class="nx-btn" onclick="nextSet()">次セット▶ポイント集計</button>
 <div class="bot-bar">
 <button class="bb" onclick="copyHist()">履歴コピー</button>
+<button class="bb" onclick="openG()">G数</button>
 <button class="bb d" onclick="openDelLast()">最後削除</button>
 <button class="bb d" onclick="openReset()">リセット</button>
 </div>
 </div>
 </div>
-<div class="ov" id="nsOv"><div class="cb2" style="width:88%;max-width:320px;text-align:left"><div style="font-size:16px;font-weight:bold;margin-bottom:14px;color:#fff;text-align:center">次セット</div><div style="margin-bottom:14px"><div style="font-size:13px;color:#aaa;margin-bottom:6px">通常G数（このセット前）</div><input type="number" id="ngInp" inputmode="numeric" placeholder="0" style="background:#0d0d0d;color:#fff;border:2px solid #1e3fa0;border-radius:8px;padding:8px 12px;font-size:18px;width:100%;text-align:center;outline:none"></div><div style="font-size:14px;color:#ddd;margin-bottom:12px;text-align:center">ポイント引き継ぐ？</div><div style="display:flex;gap:10px"><button onclick="doNextSet(false)" style="flex:1;height:44px;background:#2a2a2a;border:2px solid #555;border-radius:10px;color:#fff;font-size:15px;cursor:pointer">いいえ</button><button onclick="doNextSet(true)" style="flex:1;height:44px;background:#1e3fa0;border:none;border-radius:10px;color:#fff;font-size:15px;font-weight:bold;cursor:pointer">はい ▶</button></div></div></div>
+<div class="ov" id="nsOv"><div class="cb2" style="width:88%;max-width:320px;text-align:left"><div style="font-size:16px;font-weight:bold;margin-bottom:14px;color:#fff;text-align:center">次セット</div><div style="margin-bottom:14px"><div style="font-size:13px;color:#aaa;margin-bottom:6px">通常G数（このセット前）</div><input type="number" id="ngInp" inputmode="numeric" placeholder="0" class="ni"></div><div style="font-size:14px;color:#ddd;margin-bottom:12px;text-align:center">ポイント引き継ぐ？</div><div style="display:flex;gap:10px"><button class="nsb" onclick="doNextSet(false)" style="background:#2a2a2a;border:2px solid #555">いいえ</button><button class="nsb" onclick="doNextSet(true)" style="background:#1e3fa0;border:none;font-weight:bold">はい ▶</button></div></div></div>
 <div class="ov" id="dlOv"><div class="cb2"><div class="cm">最後のセットを削除しますか？</div><div class="ca"><button class="cc" onclick="closeDL()">キャンセル</button><button class="co" onclick="doDL()">OK</button></div></div></div>
-<div class="ov" id="rsOv"><div class="cb2"><div class="cm">データをリセットしますか？</div><div class="ca"><button class="cc" onclick="closeRS()">キャンセル</button><button class="co" onclick="doRS()">OK</button></div></div></div>
-<div id="toast">コピーしました</div>
+<div class="ov" id="rsOv"><div class="cb2"><div class="cm">データをリセットしますか？</div><div class="ca"><button class="cc" onclick="closeRS()">キャンセル</button><button class="co" onclick="doRS()">OK</button></div></div></div><div id="toast">コピーしました</div>
 <script>
 var gi=document.getElementById.bind(document);
 const SP={'○':1,'◎':15,'●':15,'☆':15,'★':30,'◇':30,'◆':60,'＊':0,'/':0,'↓':0};
+const FW={'◎':1,'●':1,'☆':1,'★':2,'◇':2,'◆':4};
 const CH=['red','green','blue'];
 const CE={red:'🔴',green:'🟢',blue:'🔵'};
 const DC={red:'#e44',green:'#3d3',blue:'#55f'};
@@ -158,7 +163,8 @@ const KM=['①','②','③','④','⑤','⑥'];
 function ncd(cp=null){return{lines:[[]],carryPt:cp};}
 function ns(cr=null,cg=null){return{red:ncd(cr),green:ncd(cg),blue:ncd(null),upperMemo:'',lowerMemo:'',bell:0,blueKyoki:0,normalG:0};}
 function hasCZ(d){return d.lines.some(function(l){return l.some(function(s){return(s[0]==='.'||s.startsWith('🟣'))&&s.length>1;});});}
-let S={cur:0,sub:'point',info:false,char:'red',flashC:{red:0,green:0,blue:0},totalG:0,globalMemo:'',sets:[ns()]};
+function freshS(){return{cur:0,sub:'point',info:false,char:'red',flashC:{red:0,green:0,blue:0},totalG:0,globalMemo:'',sets:[ns()]};}
+let S=freshS();
 function save(){localStorage.setItem('kb2v4',JSON.stringify(S));}
 function load(){try{var d=localStorage.getItem('kb2v4');if(d)S=JSON.parse(d);}catch(e){}}
 function cs(){return S.sets[S.cur];}
@@ -174,8 +180,8 @@ function calcFR(lines){
   lines.forEach(function(l){l.forEach(function(s){var ib=s.startsWith('['),r=s.replace(/\[|\]/g,'');if(r==='○'&&!ib)n++;if(r==='◎'&&!ib)f++;});});
   var d=n+f;return{flash:f,denom:d,rate:d>0?(f/d*100).toFixed(1):'0.0'};
 }
+function czSt(){var cz={red:{t:0,n:0,fw:0,fn:0},green:{t:0,n:0,fw:0,fn:0},blue:{t:0,n:0}},cc=0,uc=0;S.sets.forEach(function(st){['red','green'].forEach(function(c){st[c].lines.forEach(function(l){var w=0,h=0;l.forEach(function(s){w+=FW[s.replace(/\[|\]/g,'')]||0;var m=s.match(/^\.(\d+)$/);if(m){cz[c].t+=+m[1];cz[c].n++;cc++;h=1;}if(s.startsWith('🟣')&&s.length>2){cz[c].t+=+s.slice(2);cz[c].n++;uc++;h=1;}});if(h){cz[c].fw+=w;cz[c].fn++;}});});st.blue.lines.forEach(function(l){l.forEach(function(s){var m=/^[①-⑥][.(](\d+)/.exec(s);if(m){cz.blue.t+=+m[1];cz.blue.n++;}});});});cc+=uc;var g=S.sets.reduce(function(s,st){return s+(st.normalG||0);},0);return{cz:cz,cc:cc,uc:uc,tng:g,at:S.sets.length-1};}
 function tbel(){return S.sets.reduce(function(s,st){return s+(st.bell||0);},0);}
-function escH(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function renderAll(){
   renderTabs();
   if(S.info){showInfo();return;}
@@ -200,7 +206,7 @@ function renderPoints(){
     var txt='';
     if(cp!==null&&cp>0)txt+='('+cp+')→\n';
     txt+=d.lines.map(function(l){return l.join('');}).filter(function(l,i,a){return l.length>0||(i===0&&a.length===1);}).join('\n');
-    return '<div class="cr"><div class="cw"><span class="cd" style="background:'+DC[c]+'"></span><span class="pb">'+pt+'</span></div><div class="sy">'+escH(txt)+'</div></div>';
+    return '<div class="cr"><div class="cw"><span class="cd" style="background:'+DC[c]+'"></span><span class="pb">'+pt+'</span></div><div class="sy">'+txt+'</div></div>';
   }).join('');
 }
 function showSet(){
@@ -231,30 +237,19 @@ function renderStats(){
   gi('sBell').textContent=bs;
   gi('tgInp').value=S.totalG;
   gi('taGl').value=S.globalMemo||'';
-  var cz={red:{t:0,n:0},green:{t:0,n:0},blue:{t:0,n:0}},czCnt=0,czuCnt=0;
-  S.sets.forEach(function(st){
-    ['red','green'].forEach(function(c){st[c].lines.forEach(function(l){l.forEach(function(s){
-      var m=s.match(/^\.(\d+)$/);if(m){cz[c].t+=parseInt(m[1]);cz[c].n++;czCnt++;}
-      if(s.startsWith('🟣')&&s.length>2){cz[c].t+=parseInt(s.slice(2));cz[c].n++;czuCnt++;}
-    });});});
-    st.blue.lines.forEach(function(l){l.forEach(function(s){var m=s.match(/^[①-⑥][.(](\d+)[)]?$/);if(m){cz.blue.t+=parseInt(m[1]);cz.blue.n++;}});});
-  });
-  czCnt+=czuCnt;
-  function czRow(id,dh,c){
-    var avg=c.n>0?(c.t/c.n).toFixed(1):'－',ac=c.n>0?'#e44':'#555';
-    gi(id).innerHTML=tc(dh)+tc(c.n>0?c.t:'－',1,'#ccc')+tc(c.n,1,'#ccc')+'<td class="tcr fw" style="color:'+ac+'">'+avg+(c.n>0?'pt':'')+'</td>';
-  }
+  var r=czSt(),cz=r.cz,tng=r.tng;
+  function czRow(id,dh,c){var n=c.n,avg=n?(c.t/n).toFixed(1):'－';gi(id).innerHTML=tc(dh)+tc(n?c.t:'－',1,'#ccc')+tc(n,1,'#ccc')+'<td class="tcr fw" style="color:'+(n?'#e44':'#555')+'">'+avg+(n?'pt':'')+'</td>';}
   czRow('czR',dot(DC.red),cz.red);czRow('czG',dot(DC.green),cz.green);czRow('czB',dot(DC.blue),cz.blue);
   var rgt=cz.red.t+cz.green.t,rgn=cz.red.n+cz.green.n,rga=rgn>0?(rgt/rgn).toFixed(1):'－';
   gi('czRG').innerHTML=tc(dot('#e44',1)+'+'+dot('#3d3',1))+tc(rgn>0?rgt:'－',1,'#888')+tc(rgn,1,'#888')+'<td class="tcr fw" style="color:'+(rgn>0?'#fa0':'#555')+'">'+rga+(rgn>0?'pt':'')+'</td>';
-  var tng=S.sets.reduce(function(s,st){return s+(st.normalG||0);},0);
-  var atCnt=Math.max(0,S.sets.length-1);
+  var rf=cz.red,gf=cz.green,fav=function(a,b){return b?(a/b).toFixed(1):'－';};
+  gi('czFW').textContent='発光平均🔴:'+fav(rf.fw,rf.fn)+' 🟢:'+fav(gf.fw,gf.fn);
   function ps(n,g){if(!g||!n)return'－';return'1/'+(g/n).toFixed(1);}
   function pRow(id,lbl,n,g,lc){gi(id).innerHTML=tc(lbl,0,lc||'#aaa')+tc(n,1,'#ccc')+tc(g+'G',1,'#666')+'<td class="tcr fw" style="color:#fff">'+ps(n,g)+'</td>';}
   pRow('pBell','🔔ベル',bs,S.totalG,'#fa0');
-  pRow('pAT','初当り',atCnt,tng);
-  pRow('pCZ','🔴🟢CZ',czCnt,tng);
-  pRow('pUCZ','🟣上位CZ',czuCnt,tng,'#b07aff');
+  pRow('pAT','初当り',r.at,tng);
+  pRow('pCZ','🔴🟢CZ',r.cc,tng);
+  pRow('pUCZ','🟣上位CZ',r.uc,tng,'#b07aff');
   gi('tng').textContent=tng;
 }
 function loadMemos(){
@@ -276,7 +271,7 @@ function syncFb(){
 function renderAct(){
   var r=gi('actRow');
   if(S.char==='blue'){
-    r.innerHTML='<button class="cz-btn" onclick="doKyoki()">周期</button><button class="cz-btn" onclick="doGT()" style="background:#555">G数</button><button class="bk-btn" onclick="doBack()">戻る</button>';
+    r.innerHTML='<button class="cz-btn" onclick="doKyoki()">周期</button><button class="cz-btn" onclick="doKyoki(1)" style="background:#555">G数</button><button class="bk-btn" onclick="doBack()">戻る</button>';
   }else{
     r.innerHTML='<button class="cz-btn" onclick="doCZ()">CZ</button><button class="cz-btn" style="background:#7b2fa8" onclick="doCZU()">🟣</button><button class="bk-btn" onclick="doBack()">戻る</button>';
   }
@@ -302,15 +297,9 @@ function doCZU(){
   d.lines[d.lines.length-1].push('🟣'+pt);d.lines.push([]);
   if(S.sub==='point')renderPoints();save();
 }
-function doKyoki(){
+function doKyoki(gt){
   var set=cs(),d=set.blue,pt=calcPt(d,1),mk=KM[set.blueKyoki||0];
-  d.lines[d.lines.length-1].push(mk+'.'+pt);d.lines.push([]);
-  set.blueKyoki=(set.blueKyoki||0)+1;
-  if(S.sub==='point')renderPoints();save();
-}
-function doGT(){
-  var set=cs(),d=set.blue,pt=calcPt(d,1),mk=KM[set.blueKyoki||0];
-  d.lines[d.lines.length-1].push(mk+'('+pt+')');d.lines.push([]);
+  d.lines[d.lines.length-1].push(gt?mk+'('+pt+')':mk+'.'+pt);d.lines.push([]);
   set.blueKyoki=(set.blueKyoki||0)+1;
   if(S.sub==='point')renderPoints();save();
 }
@@ -339,22 +328,26 @@ function doNextSet(carry){
     var hR=hasCZ(set.red),hG=hasCZ(set.green);
     var pR=(hR?0:(set.red.carryPt||0))+calcPt(set.red);
     var pG=(hG?0:(set.green.carryPt||0))+calcPt(set.green);
-    ['red','green'].forEach(function(c){var d=set[c],p=c==='red'?pR:pG;if(p>0)d.lines[d.lines.length-1].push('('+p+')');});
+    ['red','green'].forEach(function(c,i){var p=i?pG:pR;if(p>0)set[c].lines[set[c].lines.length-1].push('('+p+')');});
     S.sets.push(ns(pR,pG));
   }else{S.sets.push(ns(null,null));}
   S.cur=S.sets.length-1;S.sub='point';renderAll();save();
 }
+function openG(){var v=prompt('G数',cs().normalG||'');if(v!==null){cs().normalG=+v||0;save();}}
 function copyHist(){
   var out='【集計】\n総G数：'+S.totalG+'G\n';
   var aL={red:[],green:[],blue:[]},bs=0;
   S.sets.forEach(function(st){CH.forEach(function(c){aL[c].push.apply(aL[c],st[c].lines);});bs+=st.bell||0;});
   out+='🔔'+bs+'\n';
   CH.forEach(function(c){var r=calcFR(aL[c]);out+=CE[c]+r.flash+'/'+r.denom+' ('+r.rate+'%)\n';});
-  out+='\n';
+  var r=czSt(),z=r.cz,tng=r.tng;
+  function cp(c){return z[c].n?(z[c].t/z[c].n).toFixed(1)+'pt('+z[c].n+'回)':'－';}
+  function op(n,g){return n+'回'+(g&&n?'(1/'+(g/n).toFixed(1)+'G)':'');}
+  out+='🔴CZ:'+cp('red')+' 🟢:'+cp('green')+' 🔵:'+cp('blue')+'\nST:'+op(r.at,tng)+' CZ:'+op(r.cc,tng)+'\n🟣:'+r.uc+'回 🔔:'+op(bs,S.totalG)+'\n通常G:'+tng+'G\n\n';
   S.sets.forEach(function(st,i){
     out+='【'+(i+1)+'】\n';
     if(st.upperMemo)out+=st.upperMemo+'\n\n';
-    CH.forEach(function(c){var d=st[c],cp=d.carryPt,txt='';if(cp!==null&&cp>0)txt+='('+cp+')→\n';txt+=d.lines.map(function(l){return l.join('');}).filter(function(l){return l.length>0;}).join('\n');if(txt.trim())out+=CE[c]+txt+'\n';});
+    CH.forEach(function(c){var d=st[c],txt='';if(d.carryPt>0)txt+='('+d.carryPt+')→\n';txt+=d.lines.map(function(l){return l.join('');}).filter(function(l){return l.length;}).join('\n');if(txt.trim())out+=CE[c]+txt+'\n';});
     if(st.lowerMemo)out+='\n'+st.lowerMemo+'\n';
     out+='\n';
   });
@@ -373,7 +366,7 @@ function closeDL(){gi('dlOv').classList.remove('show');}
 function doDL(){if(S.sets.length<=1)return;S.sets.pop();S.cur=S.sets.length-1;closeDL();renderAll();save();}
 function openReset(){gi('rsOv').classList.add('show');}
 function closeRS(){gi('rsOv').classList.remove('show');}
-function doRS(){localStorage.removeItem('kb2v4');S={cur:0,sub:'point',info:false,char:'red',flashC:{red:0,green:0,blue:0},totalG:0,globalMemo:'',sets:[ns()]};closeRS();renderAll();}
+function doRS(){localStorage.removeItem('kb2v4');S=freshS();closeRS();renderAll();}
 load();
 S.flashC=S.flashC||{red:0,green:0,blue:0};
 var lpT=null;
