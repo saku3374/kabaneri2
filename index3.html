@@ -2,694 +2,396 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
 <title>カバネリ2</title>
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  button { touch-action: manipulation; }
-
-html, body { height: 100%; background: #0d0d0d; color: #fff; font-family: -apple-system, sans-serif; }
-#app { display: flex; flex-direction: column; height: 100vh; height: 100dvh; overflow: hidden; }
-
-.top-bar { display: flex; background: #111; border-bottom: 1px solid #2a2a2a; min-height: 44px; flex-shrink: 0; }
-.set-tabs-wrap { flex: 1; overflow-x: auto; display: flex; scrollbar-width: none; }
-.set-tabs-wrap::-webkit-scrollbar { display: none; }
-.set-tab { padding: 10px 14px; font-size: 14px; color: #666; white-space: nowrap; cursor: pointer; border-bottom: 2px solid transparent; user-select: none; }
-.set-tab.active { color: #fff; background: #1e3fa0; border-bottom: 2px solid #3d6fe8; }
-.info-tab-btn { padding: 10px 16px; font-size: 14px; color: #666; cursor: pointer; user-select: none; flex-shrink: 0; }
-.info-tab-btn.active { color: #fff; background: #1e3fa0; }
-
-.sub-bar { display: flex; border-bottom: 1px solid #2a2a2a; flex-shrink: 0; }
-.sub-tab { flex: 1; text-align: center; padding: 9px 4px; font-size: 13px; color: #666; cursor: pointer; user-select: none; }
-.sub-tab.active { color: #fff; background: #1e3fa0; }
-
-.pane { flex: 1; overflow-y: auto; display: none; -webkit-overflow-scrolling: touch; }
-.pane.active { display: block; }
-
-.char-row { display: flex; align-items: flex-start; padding: 7px 6px; border-bottom: 1px solid #1a1a1a; min-height: 44px; }
-.cdot-wrap { width: 28px; flex-shrink: 0; padding-top: 3px; display: flex; flex-direction: column; align-items: center; gap: 3px; }
-.cdot { width: 15px; height: 15px; border-radius: 50%; display: block; }
-.pt-badge { font-size: 10px; color: #fa0; font-weight: bold; }
-.syms { flex: 1; font-size: 15px; color: #0ff; line-height: 1.65; word-break: break-all; white-space: pre-wrap; }
-
-.memo-ta { width: 100%; background: transparent; color: #ddd; font-size: 15px; resize: none; border: none; outline: none; padding: 10px; min-height: 180px; }
-.memo-ta::placeholder { color: #333; }
-
-.info-pane { flex: 1; overflow-y: auto; display: none; padding: 12px; -webkit-overflow-scrolling: touch; }
-.info-pane.active { display: block; }
-.stat-card { background: #1a1a1a; border-radius: 12px; padding: 14px; margin-bottom: 12px; }
-.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 12px; }
-.stat-item { display: flex; align-items: center; gap: 6px; font-size: 14px; }
-.stat-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
-.bell-line { color: #fa0; font-size: 14px; margin-top: 8px; }
-.g-row { display: flex; align-items: center; gap: 8px; margin-top: 10px; font-size: 14px; color: #aaa; }
-.g-inp { background: #0d0d0d; color: #fff; border: 2px solid #1e3fa0; border-radius: 8px; padding: 5px 8px; font-size: 16px; width: 80px; text-align: center; }
-.upd-btn { background: #1e3fa0; border: none; border-radius: 8px; color: #fff; padding: 6px 12px; font-size: 14px; cursor: pointer; }
-.memo-card { background: #1a1a1a; border-radius: 12px; overflow: hidden; }
-
-.input-area { flex-shrink: 0; background: #141414; border-top: 1px solid #2a2a2a; padding: 5px 6px 6px; }
-
-.char-row-btns { display: flex; gap: 5px; margin-bottom: 5px; }
-.char-btn { flex: 1; height: 46px; background: #202020; border: 2px solid transparent; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-.char-btn.sel-red   { border-color: #e44; }
-.char-btn.sel-green { border-color: #3d3; }
-.char-btn.sel-blue  { border-color: #55f; }
-.cbdot { width: 20px; height: 20px; border-radius: 50%; }
-.c-red { background: #e44; }
-.c-green { background: #3d3; }
-.c-blue { background: #55f; }
-
-.sym-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-bottom: 5px; }
-.sym-btn { height: 46px; background: #202020; border: none; border-radius: 10px; color: #fff; font-size: 20px; cursor: pointer; }
-.sym-btn:active { background: #383838; }
-.sym-sp { font-size: 16px; color: #fa0; }
-.sym-back { font-size: 15px; color: #e44; }
-
-.bf-row { display: flex; gap: 5px; margin-bottom: 5px; }
-.bell-wrap { flex: 1; display: flex; align-items: center; justify-content: space-between; background: #202020; border: 2px solid #a0660a; border-radius: 10px; padding: 0 4px; height: 44px; }
-.bell-pm { background: none; border: none; color: #fff; font-size: 22px; cursor: pointer; padding: 0 5px; }
-.bell-val { font-size: 17px; font-weight: bold; color: #fa0; }
-.flash-btn { flex: 1; height: 44px; background: #202020; border: 2px solid #333; border-radius: 10px; color: #888; font-size: 13px; cursor: pointer; font-weight: bold; }
-.flash-btn.on { border-color: #0ff; color: #0ff; background: #001e1e; }
-
-.act-row { display: flex; gap: 5px; margin-bottom: 5px; }
-.cz-btn  { flex: 2; height: 44px; background: #1e3fa0; border: none; border-radius: 10px; color: #fff; font-size: 16px; font-weight: bold; cursor: pointer; }
-.back-btn { flex: 1; height: 44px; background: #2a2a2a; border: none; border-radius: 10px; color: #fff; font-size: 14px; cursor: pointer; }
-
-.next-btn { width: 100%; height: 40px; background: #e8e8e8; border: none; border-radius: 10px; color: #111; font-size: 14px; cursor: pointer; margin-bottom: 4px; }
-
-.bot-bar { display: flex; gap: 5px; }
-.bot-btn { flex: 1; height: 32px; background: #1e1e1e; border: none; border-radius: 8px; color: #aaa; font-size: 12px; cursor: pointer; }
-.bot-btn.danger { color: #e44; }
-
-.overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.75); z-index: 200; align-items: center; justify-content: center; }
-.overlay.show { display: flex; }
-.modal-box { background: #222; border-radius: 16px; padding: 20px; width: 88%; max-width: 340px; }
-.modal-title { font-size: 17px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-.mclose { background: none; border: none; color: #888; font-size: 22px; cursor: pointer; }
-.tog-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #333; }
-.tog-label { font-size: 15px; }
-.tog { position: relative; width: 48px; height: 26px; display: inline-block; }
-.tog input { opacity: 0; width: 0; height: 0; }
-.tog-sl { position: absolute; inset: 0; background: #444; border-radius: 13px; cursor: pointer; transition: .2s; }
-.tog-sl:before { content:''; position:absolute; height:20px; width:20px; left:3px; bottom:3px; background:#fff; border-radius:50%; transition:.2s; }
-input:checked + .tog-sl { background: #1e3fa0; }
-input:checked + .tog-sl:before { transform: translateX(22px); }
-.confirm-box { background: #1a1a1a; border-radius: 16px; padding: 22px; width: 78%; max-width: 280px; text-align: center; }
-.confirm-msg { font-size: 15px; margin-bottom: 18px; color: #ddd; }
-.confirm-acts { display: flex; justify-content: flex-end; gap: 20px; }
-.conf-cancel { background:none; border:none; color:#3d6fe8; font-size:16px; cursor:pointer; }
-.conf-ok { background:none; border:none; color:#3d6fe8; font-size:16px; font-weight:bold; cursor:pointer; }
-#toast { position:fixed; bottom:80px; left:50%; transform:translateX(-50%); background:#333; color:#fff; padding:8px 18px; border-radius:20px; font-size:13px; opacity:0; transition:opacity .3s; pointer-events:none; z-index:300; white-space:nowrap; }
-#toast.show { opacity:1; }
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+button{touch-action:manipulation}
+html,body{height:100%;background:#0d0d0d;color:#fff;font-family:-apple-system,sans-serif}
+#app{display:flex;flex-direction:column;height:100vh;height:100dvh;overflow:hidden}
+.top-bar{display:flex;background:#111;border-bottom:1px solid #2a2a2a;min-height:44px;flex-shrink:0}
+.stw{flex:1;overflow-x:auto;display:flex;scrollbar-width:none}
+.stw::-webkit-scrollbar{display:none}
+.st{padding:10px 14px;font-size:14px;color:#666;white-space:nowrap;cursor:pointer;border-bottom:2px solid transparent;user-select:none}
+.st.active{color:#fff;background:#1e3fa0;border-bottom:2px solid #3d6fe8}
+.itb{padding:10px 16px;font-size:14px;color:#666;cursor:pointer;user-select:none;flex-shrink:0}
+.itb.active{color:#fff;background:#1e3fa0}
+.sub-bar{display:flex;border-bottom:1px solid #2a2a2a;flex-shrink:0}
+.sub-tab{flex:1;text-align:center;padding:9px 4px;font-size:13px;color:#666;cursor:pointer;user-select:none}
+.sub-tab.active{color:#fff;background:#1e3fa0}
+.pane{flex:1;overflow-y:auto;display:none;-webkit-overflow-scrolling:touch}
+.pane.active{display:block}
+.cr{display:flex;align-items:flex-start;padding:7px 6px;border-bottom:1px solid #1a1a1a;min-height:44px}
+.cw{width:28px;flex-shrink:0;padding-top:3px;display:flex;flex-direction:column;align-items:center;gap:3px}
+.cd{width:15px;height:15px;border-radius:50%;display:block}
+.pb{font-size:10px;color:#fa0;font-weight:bold}
+.sy{flex:1;font-size:15px;color:#0ff;line-height:1.65;word-break:break-all;white-space:pre-wrap}
+.memo-ta{width:100%;background:transparent;color:#ddd;font-size:15px;resize:none;border:none;outline:none;padding:10px;min-height:180px}
+.memo-ta::placeholder{color:#333}
+.ip{flex:1;overflow-y:auto;display:none;padding:12px;-webkit-overflow-scrolling:touch}
+.ip.active{display:block}
+.sc{background:#1a1a1a;border-radius:12px;padding:14px;margin-bottom:12px}
+.sh{font-size:13px;color:#fa0;font-weight:bold;margin-bottom:10px}
+.sg{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px}
+.si{display:flex;align-items:center;gap:6px;font-size:14px}
+.sd{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+.g-row{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:14px;color:#aaa}
+.g-inp{background:#0d0d0d;color:#fff;border:2px solid #1e3fa0;border-radius:8px;padding:5px 8px;font-size:16px;width:80px;text-align:center}
+.upd-btn{background:#1e3fa0;border:none;border-radius:8px;color:#fff;padding:6px 12px;font-size:14px;cursor:pointer}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.thd{color:#666;border-bottom:1px solid #333}
+.hint{margin-top:8px;font-size:11px;color:#555}
+.input-area{flex-shrink:0;background:#141414;border-top:1px solid #2a2a2a;padding:5px 6px 6px}
+.crb{display:flex;gap:5px;margin-bottom:5px}
+.char-btn{flex:1;height:46px;background:#202020;border:2px solid transparent;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.sel-red{border-color:#e44}.sel-green{border-color:#3d3}.sel-blue{border-color:#55f}
+.cbdot{width:20px;height:20px;border-radius:50%}
+.c-red{background:#e44}.c-green{background:#3d3}.c-blue{background:#55f}
+.sg2{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:5px}
+.sb{height:46px;background:#202020;border:none;border-radius:10px;color:#fff;font-size:20px;cursor:pointer}
+.sb:active{background:#383838}
+.sb-sp{font-size:16px;color:#fa0}.sb-bk{font-size:15px;color:#e44}
+.bf-row{display:flex;gap:5px;margin-bottom:5px}
+.bw{flex:1;display:flex;align-items:center;justify-content:space-between;background:#202020;border:2px solid #a0660a;border-radius:10px;padding:0 4px;height:44px}
+.bpm{background:none;border:none;color:#fff;font-size:22px;cursor:pointer;padding:0 5px}
+.bv{font-size:17px;font-weight:bold;color:#fa0}
+.fb{flex:1;height:44px;background:#202020;border:2px solid #333;border-radius:10px;color:#888;font-size:13px;cursor:pointer;font-weight:bold}
+.fb.on{border-color:#0ff;color:#0ff;background:#001e1e}
+.act-row{display:flex;gap:5px;margin-bottom:5px}
+.cz-btn{flex:2;height:44px;background:#1e3fa0;border:none;border-radius:10px;color:#fff;font-size:16px;font-weight:bold;cursor:pointer}
+.bk-btn{flex:1;height:44px;background:#2a2a2a;border:none;border-radius:10px;color:#fff;font-size:14px;cursor:pointer}
+.nx-btn{width:100%;height:40px;background:#e8e8e8;border:none;border-radius:10px;color:#111;font-size:14px;cursor:pointer;margin-bottom:4px}
+.bot-bar{display:flex;gap:5px}
+.bb{flex:1;height:32px;background:#1e1e1e;border:none;border-radius:8px;color:#aaa;font-size:12px;cursor:pointer}
+.bb.d{color:#e44}
+.ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;align-items:center;justify-content:center}
+.ov.show{display:flex}
+.mb{background:#222;border-radius:16px;padding:20px;width:88%;max-width:340px}
+.mt{font-size:17px;font-weight:bold;display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.mc{background:none;border:none;color:#888;font-size:22px;cursor:pointer}
+.cb2{background:#1a1a1a;border-radius:16px;padding:22px;width:78%;max-width:280px;text-align:center}
+.cm{font-size:15px;margin-bottom:18px;color:#ddd}
+.ca{display:flex;justify-content:flex-end;gap:20px}
+.cc{background:none;border:none;color:#3d6fe8;font-size:16px;cursor:pointer}
+.co{background:none;border:none;color:#3d6fe8;font-size:16px;font-weight:bold;cursor:pointer}
+#toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:8px 18px;border-radius:20px;font-size:13px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:300;white-space:nowrap}
+#toast.show{opacity:1}
+.tc{padding:6px 2px}.tcr{padding:6px 2px;text-align:right}.fw{font-weight:bold}
+.dotS{display:inline-block;width:12px;height:12px;border-radius:50%;vertical-align:middle}
+.dotX{display:inline-block;width:10px;height:10px;border-radius:50%;vertical-align:middle}
 </style>
 </head>
 <body>
 <div id="app">
-  <div class="top-bar">
-    <div class="set-tabs-wrap" id="setTabsWrap"></div>
-    <div class="info-tab-btn" id="infoTabBtn" onclick="goInfo()">情報</div>
-  </div>
-  <div class="sub-bar" id="subBar">
-    <div class="sub-tab" onclick="goSub('upper')">上メモ</div>
-    <div class="sub-tab active" onclick="goSub('point')">ポイント</div>
-    <div class="sub-tab" onclick="goSub('lower')">下メモ</div>
-  </div>
-  <div class="pane" id="paneUpper"><textarea class="memo-ta" id="taUpper" placeholder="上部メモ..." oninput="saveMemo('upper')"></textarea></div>
-  <div class="pane active" id="panePoint"><div id="pointsDisp"></div></div>
-  <div class="pane" id="paneLower"><textarea class="memo-ta" id="taLower" placeholder="下部メモ..." oninput="saveMemo('lower')"></textarea></div>
-
-  <div class="info-pane" id="infoPane">
-    <div class="stat-card">
-      <div style="font-size:13px;color:#fa0;font-weight:bold;margin-bottom:10px">発光率</div>
-      <div class="stat-grid">
-        <div class="stat-item"><span class="stat-dot" style="background:#e44"></span><span id="sRed">0/0 (0.0%)</span></div>
-        <div class="stat-item"><span class="stat-dot" style="background:#3d3"></span><span id="sGreen">0/0 (0.0%)</span></div>
-        <div class="stat-item" style="grid-column:span 2"><span class="stat-dot" style="background:#e44;margin-right:2px"></span><span class="stat-dot" style="background:#3d3"></span>&nbsp;<span id="sRedGreen">0/0 (0.0%)</span></div>
-        <div class="stat-item"><span class="stat-dot" style="background:#55f"></span><span id="sBlue">0/0 (0.0%)</span></div>
-      </div>
-      <div class="bell-line" style="margin-top:10px">🔔 <span id="sBell">0</span></div>
-      <div class="g-row"><span>総G数:</span><input type="number" class="g-inp" id="totalGInp" value="0" inputmode="numeric"><button class="upd-btn" onclick="updateTotalG()">更新</button></div>
-    </div>
-    <div class="stat-card">
-      <div style="font-size:13px;color:#fa0;font-weight:bold;margin-bottom:10px">CZ到達PT平均</div>
-      <table style="width:100%;border-collapse:collapse;font-size:13px">
-        <tr style="color:#666;border-bottom:1px solid #333">
-          <td style="padding:4px 2px">キャラ</td>
-          <td style="padding:4px 2px;text-align:right">合計PT</td>
-          <td style="padding:4px 2px;text-align:right">回数</td>
-          <td style="padding:4px 2px;text-align:right">平均PT</td>
-        </tr>
-        <tr id="czRowRed"  style="border-bottom:1px solid #222"></tr>
-        <tr id="czRowGreen" style="border-bottom:1px solid #222"></tr>
-        <tr id="czRowRedGreen" style="border-bottom:1px solid #333"></tr>
-        <tr id="czRowBlue"></tr>
-      </table>
-      <div style="margin-top:10px;font-size:11px;color:#555">設定56：約66pt / 設定4：約75pt / 設定123：約89pt</div>
-    </div>
-    <div class="stat-card">
-      <div style="font-size:13px;color:#fa0;font-weight:bold;margin-bottom:10px">確率</div>
-      <table style="width:100%;border-collapse:collapse;font-size:13px">
-        <tr style="color:#666;border-bottom:1px solid #333">
-          <td style="padding:4px 2px">項目</td>
-          <td style="padding:4px 2px;text-align:right">回数</td>
-          <td style="padding:4px 2px;text-align:right">G数</td>
-          <td style="padding:4px 2px;text-align:right">確率</td>
-        </tr>
-        <tr id="probBell"></tr>
-        <tr id="probAT" style="border-top:1px solid #222"></tr>
-        <tr id="probCZ" style="border-top:1px solid #222"></tr>
-      </table>
-      <div style="margin-top:8px;font-size:11px;color:#555">累計通常G数: <span id="totalNormalG">0</span>G</div>
-    </div>
-    <div class="memo-card"><textarea class="memo-ta" id="taGlobal" placeholder="全体メモ..." style="min-height:120px" oninput="saveGlobal()"></textarea></div>
-  </div>
-
-  <div class="input-area" id="inputArea">
-    <div class="char-row-btns">
-      <button class="char-btn sel-red"  id="btnRed"   onclick="selChar('red')"  ><span class="cbdot c-red"></span></button>
-      <button class="char-btn"          id="btnGreen" onclick="selChar('green')"><span class="cbdot c-green"></span></button>
-      <button class="char-btn"          id="btnBlue"  onclick="selChar('blue')" ><span class="cbdot c-blue"></span></button>
-    </div>
-    <div class="sym-grid">
-      <button class="sym-btn" onclick="addSym('○')">○</button>
-      <button class="sym-btn" onclick="addSym('◎')">◎</button>
-      <button class="sym-btn" onclick="addSym('●')">●</button>
-      <button class="sym-btn" onclick="addSym('☆')">☆</button>
-      <button class="sym-btn" onclick="addSym('★')">★</button>
-      <button class="sym-btn" onclick="addSym('◇')">◇</button>
-      <button class="sym-btn" onclick="addSym('◆')">◆</button>
-      <button class="sym-btn" onclick="addSym('＊')">＊</button>
-      <button class="sym-btn sym-sp" onclick="addDown()">↓</button>
-      <button class="sym-btn sym-sp" onclick="addSlash()">/</button>
-      <button class="sym-btn sym-back" onclick="doBack()">戻</button>
-      <button class="sym-btn" style="opacity:0;pointer-events:none"></button>
-    </div>
-    <div class="bf-row">
-      <div class="bell-wrap">
-        <button class="bell-pm" onclick="chgBell(-1)">－</button>
-        <span style="font-size:16px">🔔</span>
-        <span class="bell-val" id="bellVal">0</span>
-        <button class="bell-pm" onclick="chgBell(1)">＋</button>
-      </div>
-      <button class="flash-btn" id="flashBtn" onclick="togFlash()">発光中</button>
-    </div>
-    <div class="act-row" id="actRow"></div>
-    <button class="next-btn" onclick="nextSet()">次セット▶ポイント集計</button>
-    <div class="bot-bar">
-      <button class="bot-btn"        onclick="copyHist()">履歴コピー</button>
-      <button class="bot-btn"        onclick="openSettings()">設定</button>
-      <button class="bot-btn danger" onclick="openDelLast()">最後削除</button>
-      <button class="bot-btn danger" onclick="openReset()">リセット</button>
-    </div>
-  </div>
+<div class="top-bar"><div class="stw" id="stw"></div><div class="itb" id="itb" onclick="goInfo()">情報</div></div>
+<div class="sub-bar" id="sb2"><div class="sub-tab" onclick="goSub('upper')">上メモ</div><div class="sub-tab active" onclick="goSub('point')">ポイント</div><div class="sub-tab" onclick="goSub('lower')">下メモ</div></div>
+<div class="pane" id="pU"><textarea class="memo-ta" id="taU" placeholder="上部メモ..." oninput="saveMemo('upper')"></textarea></div>
+<div class="pane active" id="pP"><div id="pd"></div></div>
+<div class="pane" id="pL"><textarea class="memo-ta" id="taL" placeholder="下部メモ..." oninput="saveMemo('lower')"></textarea></div>
+<div class="ip" id="ip">
+<div class="sc"><div class="sh">発光率</div>
+<div class="sg">
+<div class="si"><span class="sd" style="background:#e44"></span><span id="sR">0/0 (0.0%)</span></div>
+<div class="si"><span class="sd" style="background:#3d3"></span><span id="sG">0/0 (0.0%)</span></div>
+<div class="si" style="grid-column:span 2"><span class="sd" style="background:#e44;margin-right:2px"></span><span class="sd" style="background:#3d3"></span>&nbsp;<span id="sRG">0/0 (0.0%)</span></div>
+<div class="si"><span class="sd" style="background:#55f"></span><span id="sB">0/0 (0.0%)</span></div>
 </div>
-
-<div class="overlay" id="settingsOv">
-  <div class="modal-box">
-    <div class="modal-title">設定 <span style="font-size:12px;color:#666;font-weight:normal">Ver.2.0</span><button class="mclose" onclick="closeSettings()">×</button></div>
-    <div class="tog-row"><span class="tog-label">ライトモード</span><label class="tog"><input type="checkbox" id="togLight" onchange="applyLight()"><span class="tog-sl"></span></label></div>
-    <div class="tog-row" style="border:none"><span class="tog-label">自動発光</span><label class="tog"><input type="checkbox" id="togAutoFlash" checked><span class="tog-sl"></span></label></div>
-  </div>
+<div style="color:#fa0;font-size:14px;margin-top:8px">🔔 <span id="sBell">0</span></div>
+<div class="g-row"><span>総G数:</span><input type="number" class="g-inp" id="tgInp" value="0" inputmode="numeric"><button class="upd-btn" onclick="updateTotalG()">更新</button></div>
 </div>
-
-<div class="overlay" id="nextSetOv">
-  <div class="confirm-box" style="width:88%;max-width:320px;text-align:left">
-    <div style="font-size:16px;font-weight:bold;margin-bottom:14px;color:#fff;text-align:center">次セット</div>
-    <div style="margin-bottom:14px">
-      <div style="font-size:13px;color:#aaa;margin-bottom:6px">通常G数（このセット前）</div>
-      <input type="number" id="normalGInp" inputmode="numeric" placeholder="0" style="background:#0d0d0d;color:#fff;border:2px solid #1e3fa0;border-radius:8px;padding:8px 12px;font-size:18px;width:100%;text-align:center;outline:none">
-    </div>
-    <div style="font-size:14px;color:#ddd;margin-bottom:12px;text-align:center">ポイント引き継ぐ？</div>
-    <div style="display:flex;gap:10px">
-      <button onclick="doNextSet(false)" style="flex:1;height:44px;background:#2a2a2a;border:2px solid #555;border-radius:10px;color:#fff;font-size:15px;cursor:pointer">いいえ</button>
-      <button onclick="doNextSet(true)" style="flex:1;height:44px;background:#1e3fa0;border:none;border-radius:10px;color:#fff;font-size:15px;font-weight:bold;cursor:pointer">はい ▶</button>
-    </div>
-  </div>
+<div class="sc"><div class="sh">CZ到達PT平均</div>
+<table class="tbl"><tr class="thd"><td class="tc">キャラ</td><td class="tcr">合計PT</td><td class="tcr">回数</td><td class="tcr">平均PT</td></tr>
+<tr id="czR"></tr><tr id="czG"></tr><tr id="czRG" style="border-bottom:1px solid #333"></tr><tr id="czB"></tr>
+</table></div>
+<div class="sc"><div class="sh">確率</div>
+<table class="tbl"><tr class="thd"><td class="tc">項目</td><td class="tcr">回数</td><td class="tcr">G数</td><td class="tcr">確率</td></tr>
+<tr id="pBell"></tr><tr id="pAT" style="border-top:1px solid #222"></tr><tr id="pCZ" style="border-top:1px solid #222"></tr><tr id="pUCZ" style="border-top:1px solid #222"></tr>
+</table>
+<div class="hint">累計通常G数: <span id="tng">0</span>G</div>
 </div>
-
-<div class="overlay" id="delLastOv">
-  <div class="confirm-box">
-    <div class="confirm-msg">最後のセットを削除しますか？</div>
-    <div class="confirm-acts">
-      <button class="conf-cancel" onclick="closeDelLast()">キャンセル</button>
-      <button class="conf-ok" onclick="doDelLast()">OK</button>
-    </div>
-  </div>
+<div style="background:#1a1a1a;border-radius:12px;overflow:hidden"><textarea class="memo-ta" id="taGl" placeholder="全体メモ..." style="min-height:120px" oninput="saveGlobal()"></textarea></div>
 </div>
-
-<div class="overlay" id="resetOv">
-  <div class="confirm-box">
-    <div class="confirm-msg">データをリセットしますか？</div>
-    <div class="confirm-acts">
-      <button class="conf-cancel" onclick="closeReset()">キャンセル</button>
-      <button class="conf-ok" onclick="doReset()">OK</button>
-    </div>
-  </div>
+<div class="input-area" id="ia">
+<div class="crb">
+<button class="char-btn sel-red" id="bR" onclick="selChar('red')"><span class="cbdot c-red"></span></button>
+<button class="char-btn" id="bG" onclick="selChar('green')"><span class="cbdot c-green"></span></button>
+<button class="char-btn" id="bB" onclick="selChar('blue')"><span class="cbdot c-blue"></span></button>
 </div>
-
+<div class="sg2" id="sg2">
+<button class="sb" data-s="○">○</button>
+<button class="sb" data-s="◎">◎</button>
+<button class="sb" data-s="●">●</button>
+<button class="sb" data-s="☆">☆</button>
+<button class="sb" data-s="★">★</button>
+<button class="sb" data-s="◇">◇</button>
+<button class="sb" data-s="◆">◆</button>
+<button class="sb" data-s="＊">＊</button>
+<button class="sb sb-sp" data-s="↓">↓</button>
+<button class="sb sb-sp" data-s="/">/ </button>
+<button class="sb sb-bk" onclick="doBack()">戻</button>
+<button class="sb" style="opacity:0;pointer-events:none"></button>
+</div>
+<div class="bf-row">
+<div class="bw"><button class="bpm" onclick="chgBell(-1)">－</button><span style="font-size:16px">🔔</span><span class="bv" id="bellVal">0</span><button class="bpm" onclick="chgBell(1)">＋</button></div>
+<button class="fb" id="flashBtn" onclick="togFlash()">発光中</button>
+</div>
+<div class="act-row" id="actRow"></div>
+<button class="nx-btn" onclick="nextSet()">次セット▶ポイント集計</button>
+<div class="bot-bar">
+<button class="bb" onclick="copyHist()">履歴コピー</button>
+<button class="bb d" onclick="openDelLast()">最後削除</button>
+<button class="bb d" onclick="openReset()">リセット</button>
+</div>
+</div>
+</div>
+<div class="ov" id="nsOv"><div class="cb2" style="width:88%;max-width:320px;text-align:left"><div style="font-size:16px;font-weight:bold;margin-bottom:14px;color:#fff;text-align:center">次セット</div><div style="margin-bottom:14px"><div style="font-size:13px;color:#aaa;margin-bottom:6px">通常G数（このセット前）</div><input type="number" id="ngInp" inputmode="numeric" placeholder="0" style="background:#0d0d0d;color:#fff;border:2px solid #1e3fa0;border-radius:8px;padding:8px 12px;font-size:18px;width:100%;text-align:center;outline:none"></div><div style="font-size:14px;color:#ddd;margin-bottom:12px;text-align:center">ポイント引き継ぐ？</div><div style="display:flex;gap:10px"><button onclick="doNextSet(false)" style="flex:1;height:44px;background:#2a2a2a;border:2px solid #555;border-radius:10px;color:#fff;font-size:15px;cursor:pointer">いいえ</button><button onclick="doNextSet(true)" style="flex:1;height:44px;background:#1e3fa0;border:none;border-radius:10px;color:#fff;font-size:15px;font-weight:bold;cursor:pointer">はい ▶</button></div></div></div>
+<div class="ov" id="dlOv"><div class="cb2"><div class="cm">最後のセットを削除しますか？</div><div class="ca"><button class="cc" onclick="closeDL()">キャンセル</button><button class="co" onclick="doDL()">OK</button></div></div></div>
+<div class="ov" id="rsOv"><div class="cb2"><div class="cm">データをリセットしますか？</div><div class="ca"><button class="cc" onclick="closeRS()">キャンセル</button><button class="co" onclick="doRS()">OK</button></div></div></div>
 <div id="toast">コピーしました</div>
-
 <script>
-// ポイント定義
-const SYM_PT = {'○':1,'◎':15,'●':15,'☆':15,'★':30,'◇':30,'◆':60,'＊':0,'/':0,'↓':0};
-const CHARS = ['red','green','blue'];
-const CEMOJI = {red:'🔴',green:'🟢',blue:'🔵'};
-
-function newCharData(carryPt=null){ return {lines:[[]], carryPt}; }
-function newSet(cRed=null,cGreen=null){
-  return { red:newCharData(cRed), green:newCharData(cGreen), blue:newCharData(null), upperMemo:'', lowerMemo:'', bell:0, blueKyoki:0, normalG:0 };
-}
-
-let S = { cur:0, sub:'point', info:false, char:'red', flash:false, totalG:0, globalMemo:'', sets:[newSet()] };
-
-function save(){ localStorage.setItem('kb2v4',JSON.stringify(S)); }
-function load(){ try{ const d=localStorage.getItem('kb2v4'); if(d) S=JSON.parse(d); }catch(e){} }
-function cs(){ return S.sets[S.cur]; }
-
-// 最後のリセットマーカー(.pt)以降のptのみ計算（🔴🟢用）
-function calcPt(charData){
-  let lastResetIdx=-1;
-  charData.lines.forEach((line,i)=>{
-    if(line.some(sym=>sym.startsWith('.')&&sym.length>1)) lastResetIdx=i;
-  });
-  let pt=0;
-  charData.lines.forEach((line,i)=>{
-    if(i<=lastResetIdx) return;
-    line.forEach(sym=>{
-      const raw=sym.replace(/\[|\]/g,'');
-      pt+=SYM_PT[raw]||0;
-    });
-  });
+var gi=document.getElementById.bind(document);
+const SP={'○':1,'◎':15,'●':15,'☆':15,'★':30,'◇':30,'◆':60,'＊':0,'/':0,'↓':0};
+const CH=['red','green','blue'];
+const CE={red:'🔴',green:'🟢',blue:'🔵'};
+const DC={red:'#e44',green:'#3d3',blue:'#55f'};
+const KM=['①','②','③','④','⑤','⑥'];
+function ncd(cp=null){return{lines:[[]],carryPt:cp};}
+function ns(cr=null,cg=null){return{red:ncd(cr),green:ncd(cg),blue:ncd(null),upperMemo:'',lowerMemo:'',bell:0,blueKyoki:0,normalG:0};}
+function hasCZ(d){return d.lines.some(function(l){return l.some(function(s){return(s[0]==='.'||s.startsWith('🟣'))&&s.length>1;});});}
+let S={cur:0,sub:'point',info:false,char:'red',flashC:{red:0,green:0,blue:0},totalG:0,globalMemo:'',sets:[ns()]};
+function save(){localStorage.setItem('kb2v4',JSON.stringify(S));}
+function load(){try{var d=localStorage.getItem('kb2v4');if(d)S=JSON.parse(d);}catch(e){}}
+function cs(){return S.sets[S.cur];}
+function calcPt(d,bl){
+  var li=-1;
+  d.lines.forEach(function(l,i){if(l.some(function(s){return bl?/^[①②③④⑤⑥]/.test(s):(s[0]==='.'||s.startsWith('🟣'))&&s.length>1;}))li=i;});
+  var pt=0;
+  d.lines.forEach(function(l,i){if(i<=li)return;l.forEach(function(s){pt+=SP[s.replace(/\[|\]/g,'')]||0;});});
   return pt;
 }
-
-// 🔵は最後のリセット以降のptのみカウント（最後の行グループ）
-function calcBluePt(charData){
-  if(!charData.lines||charData.lines.length===0) return 0;
-  // 最後の周期/G数マーカー(.ptN①など)が含まれる行を探し、その後の行だけ合計
-  let lastResetIdx = -1;
-  charData.lines.forEach((line, i)=>{
-    if(line.some(sym => /^[①②③④⑤⑥]/.test(sym))) lastResetIdx = i;
-  });
-  // リセット行より後の行のptを合計
-  let pt=0;
-  charData.lines.forEach((line, i)=>{
-    if(i <= lastResetIdx) return;
-    line.forEach(sym=>{
-      const raw=sym.replace(/\[|\]/g,'');
-      pt+=SYM_PT[raw]||0;
-    });
-  });
-  return pt;
+function calcFR(lines){
+  var n=0,f=0;
+  lines.forEach(function(l){l.forEach(function(s){var ib=s.startsWith('['),r=s.replace(/\[|\]/g,'');if(r==='○'&&!ib)n++;if(r==='◎'&&!ib)f++;});});
+  var d=n+f;return{flash:f,denom:d,rate:d>0?(f/d*100).toFixed(1):'0.0'};
 }
-
-// 発光率: ○÷(○+◎) []内は分母除外
-function calcFlashRate(lines){
-  let normal=0,flash=0;
-  lines.forEach(line=>{
-    line.forEach(sym=>{
-      const inBracket=sym.startsWith('[');
-      const raw=sym.replace(/\[|\]/g,'');
-      if(raw==='○'&&!inBracket) normal++;
-      if(raw==='◎'&&!inBracket) flash++;
-    });
-  });
-  const d=normal+flash;
-  return {flash,denom:d,rate:d>0?(flash/d*100).toFixed(1):'0.0'};
-}
-
-// ── Render ──────────────────────────────────────────────────────
+function tbel(){return S.sets.reduce(function(s,st){return s+(st.bell||0);},0);}
+function escH(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function renderAll(){
-  renderTopTabs();
-  if(S.info){ showInfo(); return; }
-  showSetView();
-  renderSubTabs();
-  renderPoints();
-  loadMemos();
-  syncCharBtns();
-  syncFlashBtn();
-  renderActRow();
-  document.getElementById('bellVal').textContent=totalBell();
+  renderTabs();
+  if(S.info){showInfo();return;}
+  showSet();renderSubTabs();renderPoints();loadMemos();syncCh();syncFb();renderAct();
+  gi('bellVal').textContent=tbel();
 }
-
-function renderTopTabs(){
-  document.getElementById('setTabsWrap').innerHTML=
-    S.sets.map((s,i)=>`<div class="set-tab${!S.info&&S.cur===i?' active':''}" onclick="goSet(${i})">【${i+1}】</div>`).join('');
-  document.getElementById('infoTabBtn').className='info-tab-btn'+(S.info?' active':'');
+function renderTabs(){
+  gi('stw').innerHTML=S.sets.map(function(s,i){return'<div class="st'+((!S.info&&S.cur===i)?' active':'')+'" onclick="goSet('+i+')">【'+(i+1)+'】</div>';}).join('');
+  gi('itb').className='itb'+(S.info?' active':'');
 }
-
 function renderSubTabs(){
-  const subs=['upper','point','lower'];
-  document.querySelectorAll('.sub-tab').forEach((el,i)=>{ el.className='sub-tab'+(S.sub===subs[i]?' active':''); });
-  document.getElementById('paneUpper').className='pane'+(S.sub==='upper'?' active':'');
-  document.getElementById('panePoint').className='pane'+(S.sub==='point'?' active':'');
-  document.getElementById('paneLower').className='pane'+(S.sub==='lower'?' active':'');
+  var ss=['upper','point','lower'],ids=['pU','pP','pL'];
+  document.querySelectorAll('.sub-tab').forEach(function(el,i){el.className='sub-tab'+(S.sub===ss[i]?' active':'');});
+  ids.forEach(function(id,i){gi(id).className='pane'+(S.sub===ss[i]?' active':'');});
 }
-
 function renderPoints(){
-  const set=cs();
-  const rows=CHARS.map(c=>{
-    const d=set[c];
-    const carry=d.carryPt;
-    const hasCZ = d.lines.some(line=>line.some(sym=>sym.startsWith('.')&&sym.length>1));
-    const pt = c==='blue' ? calcBluePt(d) : (hasCZ ? 0 : (carry||0)) + calcPt(d);
-    const dotColor=c==='red'?'#e44':c==='green'?'#3d3':'#55f';
-    let txt='';
-    if(carry!==null&&carry>0) txt+=`(${carry})→\n`;
-    txt+=d.lines.map(l=>l.join('')).filter((l,i,a)=>l.length>0||(i===0&&a.length===1)).join('\n');
-    return `<div class="char-row">
-      <div class="cdot-wrap">
-        <span class="cdot" style="background:${dotColor}"></span>
-        <span class="pt-badge">${pt}</span>
-      </div>
-      <div class="syms">${escH(txt)}</div>
-    </div>`;
+  var set=cs();
+  gi('pd').innerHTML=CH.map(function(c){
+    var d=set[c],cp=d.carryPt;
+    var hCZ=c!=='blue'&&hasCZ(d);
+    var pt=c==='blue'?calcPt(d,1):(hCZ?0:(cp||0))+calcPt(d);
+    var txt='';
+    if(cp!==null&&cp>0)txt+='('+cp+')→\n';
+    txt+=d.lines.map(function(l){return l.join('');}).filter(function(l,i,a){return l.length>0||(i===0&&a.length===1);}).join('\n');
+    return '<div class="cr"><div class="cw"><span class="cd" style="background:'+DC[c]+'"></span><span class="pb">'+pt+'</span></div><div class="sy">'+escH(txt)+'</div></div>';
   }).join('');
-  document.getElementById('pointsDisp').innerHTML=rows;
 }
-
-function escH(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-
-function showSetView(){
-  document.getElementById('subBar').style.display='flex';
-  document.getElementById('inputArea').style.display='block';
-  document.getElementById('infoPane').className='info-pane';
+function showSet(){
+  gi('sb2').style.display='flex';
+  gi('ia').style.display='block';
+  gi('ip').className='ip';
 }
-
 function showInfo(){
-  document.getElementById('subBar').style.display='none';
-  document.getElementById('inputArea').style.display='none';
-  ['Upper','Point','Lower'].forEach(n=>{ document.getElementById('pane'+n).className='pane'; });
-  document.getElementById('infoPane').className='info-pane active';
+  gi('sb2').style.display='none';
+  gi('ia').style.display='none';
+  ['pU','pP','pL'].forEach(function(n){gi(n).className='pane';});
+  gi('ip').className='ip active';
   renderStats();
 }
-
+function dot(col,x){return'<span class="dot'+(x?'X':'S')+'" style="background:'+col+'"></span>';}
+function tc(v,r,c){return'<td class="tc'+(r?'r':'')+'"'+(c?' style="color:'+c+'"':'')+'>'+v+'</td>';}
 function renderStats(){
-  let bellSum=0;
-  const allLines={red:[],green:[],blue:[]};
-  S.sets.forEach(set=>{
-    CHARS.forEach(c=>{ allLines[c].push(...set[c].lines); });
-    bellSum+=set.bell||0;
-  });
-
-  // 発光率
-  const rR=calcFlashRate(allLines.red);
-  const rG=calcFlashRate(allLines.green);
-  const rB=calcFlashRate(allLines.blue);
-  const rRG={flash:rR.flash+rG.flash, denom:rR.denom+rG.denom};
+  var aL={red:[],green:[],blue:[]},bs=0;
+  S.sets.forEach(function(st){CH.forEach(function(c){aL[c].push.apply(aL[c],st[c].lines);});bs+=st.bell||0;});
+  var rR=calcFR(aL.red),rG=calcFR(aL.green),rB=calcFR(aL.blue);
+  var rRG={flash:rR.flash+rG.flash,denom:rR.denom+rG.denom};
   rRG.rate=rRG.denom>0?(rRG.flash/rRG.denom*100).toFixed(1):'0.0';
-  document.getElementById('sRed').textContent=`${rR.flash}/${rR.denom} (${rR.rate}%)`;
-  document.getElementById('sGreen').textContent=`${rG.flash}/${rG.denom} (${rG.rate}%)`;
-  document.getElementById('sRedGreen').textContent=`${rRG.flash}/${rRG.denom} (${rRG.rate}%)`;
-  document.getElementById('sBlue').textContent=`${rB.flash}/${rB.denom} (${rB.rate}%)`;
-  document.getElementById('sBell').textContent=bellSum;
-  document.getElementById('totalGInp').value=S.totalG;
-  document.getElementById('taGlobal').value=S.globalMemo||'';
-
-  // CZ到達PT平均
-  // .ptN形式（🔴🟢CZ）と①.pt / ①(pt)形式（🔵周期）からptを抽出
-  const czData={red:{total:0,count:0},green:{total:0,count:0},blue:{total:0,count:0}};
-  S.sets.forEach(set=>{
-    ['red','green'].forEach(c=>{
-      set[c].lines.forEach(line=>{
-        line.forEach(sym=>{
-          const m=sym.match(/^\.(\d+)$/);
-          if(m){ czData[c].total+=parseInt(m[1]); czData[c].count++; }
-        });
-      });
-    });
-    // 🔵: ①.pt と ①(pt) 両方
-    set.blue.lines.forEach(line=>{
-      line.forEach(sym=>{
-        const m1=sym.match(/^[①②③④⑤⑥]\.(\d+)$/);
-        const m2=sym.match(/^[①②③④⑤⑥]\((\d+)\)$/);
-        const m=m1||m2;
-        if(m){ czData.blue.total+=parseInt(m[1]); czData.blue.count++; }
-      });
-    });
+  function fs(r){return r.flash+'/'+r.denom+' ('+r.rate+'%)';}
+  gi('sR').textContent=fs(rR);
+  gi('sG').textContent=fs(rG);
+  gi('sRG').textContent=fs(rRG);
+  gi('sB').textContent=fs(rB);
+  gi('sBell').textContent=bs;
+  gi('tgInp').value=S.totalG;
+  gi('taGl').value=S.globalMemo||'';
+  var cz={red:{t:0,n:0},green:{t:0,n:0},blue:{t:0,n:0}},czCnt=0,czuCnt=0;
+  S.sets.forEach(function(st){
+    ['red','green'].forEach(function(c){st[c].lines.forEach(function(l){l.forEach(function(s){
+      var m=s.match(/^\.(\d+)$/);if(m){cz[c].t+=parseInt(m[1]);cz[c].n++;czCnt++;}
+      if(s.startsWith('🟣')&&s.length>2){cz[c].t+=parseInt(s.slice(2));cz[c].n++;czuCnt++;}
+    });});});
+    st.blue.lines.forEach(function(l){l.forEach(function(s){var m=s.match(/^[①-⑥][.(](\d+)[)]?$/);if(m){cz.blue.t+=parseInt(m[1]);cz.blue.n++;}});});
   });
-
-  const dotColor={red:'#e44',green:'#3d3',blue:'#55f'};
-  CHARS.forEach(c=>{
-    const {total,count}=czData[c];
-    const avg=count>0?(total/count).toFixed(1):'－';
-    const avgColor=count>0?'#e44':'#555';
-    document.getElementById('czRow'+c[0].toUpperCase()+c.slice(1)).innerHTML=`
-      <td style="padding:6px 2px"><span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:${dotColor[c]};vertical-align:middle"></span></td>
-      <td style="padding:6px 2px;text-align:right;color:#ccc">${count>0?total:'－'}</td>
-      <td style="padding:6px 2px;text-align:right;color:#ccc">${count}</td>
-      <td style="padding:6px 2px;text-align:right;color:${avgColor};font-weight:bold">${avg}${count>0?'pt':''}</td>`;
-  });
-  // 🔴+🟢合算
-  const rgTotal=czData.red.total+czData.green.total;
-  const rgCount=czData.red.count+czData.green.count;
-  const rgAvg=rgCount>0?(rgTotal/rgCount).toFixed(1):'－';
-  document.getElementById('czRowRedGreen').innerHTML=`
-    <td style="padding:6px 2px;color:#888;font-size:12px">
-      <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#e44;vertical-align:middle"></span>+<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#3d3;vertical-align:middle"></span>
-    </td>
-    <td style="padding:6px 2px;text-align:right;color:#888">${rgCount>0?rgTotal:'－'}</td>
-    <td style="padding:6px 2px;text-align:right;color:#888">${rgCount}</td>
-    <td style="padding:6px 2px;text-align:right;color:${rgCount>0?'#fa0':'#555'};font-weight:bold">${rgAvg}${rgCount>0?'pt':''}</td>`;
-
-  // 確率計算
-  const totalNormalG=S.sets.reduce((s,set)=>s+(set.normalG||0),0);
-  let czCountProb=0;
-  S.sets.forEach(set=>{
-    ['red','green'].forEach(c=>{
-      set[c].lines.forEach(line=>{
-        line.forEach(sym=>{ if(/^\.\d+$/.test(sym)) czCountProb++; });
-      });
-    });
-  });
-  const atCount=S.sets.length;
-  function probStr(count,g){ if(!g||!count) return '－'; return `1/${(g/count).toFixed(1)}`; }
-  document.getElementById('probBell').innerHTML=`
-    <td style="padding:6px 2px;color:#fa0">🔔ベル</td>
-    <td style="padding:6px 2px;text-align:right;color:#ccc">${bellSum}</td>
-    <td style="padding:6px 2px;text-align:right;color:#666">${S.totalG}G</td>
-    <td style="padding:6px 2px;text-align:right;color:#fff;font-weight:bold">${probStr(bellSum,S.totalG)}</td>`;
-  document.getElementById('probAT').innerHTML=`
-    <td style="padding:6px 2px;color:#aaa">初当り</td>
-    <td style="padding:6px 2px;text-align:right;color:#ccc">${atCount}</td>
-    <td style="padding:6px 2px;text-align:right;color:#666">${totalNormalG}G</td>
-    <td style="padding:6px 2px;text-align:right;color:#fff;font-weight:bold">${probStr(atCount,totalNormalG)}</td>`;
-  document.getElementById('probCZ').innerHTML=`
-    <td style="padding:6px 2px;color:#aaa">🔴🟢CZ</td>
-    <td style="padding:6px 2px;text-align:right;color:#ccc">${czCountProb}</td>
-    <td style="padding:6px 2px;text-align:right;color:#666">${totalNormalG}G</td>
-    <td style="padding:6px 2px;text-align:right;color:#fff;font-weight:bold">${probStr(czCountProb,totalNormalG)}</td>`;
-  document.getElementById('totalNormalG').textContent=totalNormalG;
+  czCnt+=czuCnt;
+  function czRow(id,dh,c){
+    var avg=c.n>0?(c.t/c.n).toFixed(1):'－',ac=c.n>0?'#e44':'#555';
+    gi(id).innerHTML=tc(dh)+tc(c.n>0?c.t:'－',1,'#ccc')+tc(c.n,1,'#ccc')+'<td class="tcr fw" style="color:'+ac+'">'+avg+(c.n>0?'pt':'')+'</td>';
+  }
+  czRow('czR',dot(DC.red),cz.red);czRow('czG',dot(DC.green),cz.green);czRow('czB',dot(DC.blue),cz.blue);
+  var rgt=cz.red.t+cz.green.t,rgn=cz.red.n+cz.green.n,rga=rgn>0?(rgt/rgn).toFixed(1):'－';
+  gi('czRG').innerHTML=tc(dot('#e44',1)+'+'+dot('#3d3',1))+tc(rgn>0?rgt:'－',1,'#888')+tc(rgn,1,'#888')+'<td class="tcr fw" style="color:'+(rgn>0?'#fa0':'#555')+'">'+rga+(rgn>0?'pt':'')+'</td>';
+  var tng=S.sets.reduce(function(s,st){return s+(st.normalG||0);},0);
+  var atCnt=Math.max(0,S.sets.length-1);
+  function ps(n,g){if(!g||!n)return'－';return'1/'+(g/n).toFixed(1);}
+  function pRow(id,lbl,n,g,lc){gi(id).innerHTML=tc(lbl,0,lc||'#aaa')+tc(n,1,'#ccc')+tc(g+'G',1,'#666')+'<td class="tcr fw" style="color:#fff">'+ps(n,g)+'</td>';}
+  pRow('pBell','🔔ベル',bs,S.totalG,'#fa0');
+  pRow('pAT','初当り',atCnt,tng);
+  pRow('pCZ','🔴🟢CZ',czCnt,tng);
+  pRow('pUCZ','🟣上位CZ',czuCnt,tng,'#b07aff');
+  gi('tng').textContent=tng;
 }
-
 function loadMemos(){
-  const set=cs();
-  document.getElementById('taUpper').value=set.upperMemo||'';
-  document.getElementById('taLower').value=set.lowerMemo||'';
-  document.getElementById('bellVal').textContent=totalBell();
+  var set=cs();
+  gi('taU').value=set.upperMemo||'';
+  gi('taL').value=set.lowerMemo||'';
+  gi('bellVal').textContent=tbel();
 }
-
-function syncCharBtns(){
-  document.getElementById('btnRed').className='char-btn'+(S.char==='red'?' sel-red':'');
-  document.getElementById('btnGreen').className='char-btn'+(S.char==='green'?' sel-green':'');
-  document.getElementById('btnBlue').className='char-btn'+(S.char==='blue'?' sel-blue':'');
+function syncCh(){
+  gi('bR').className='char-btn'+(S.char==='red'?' sel-red':'');
+  gi('bG').className='char-btn'+(S.char==='green'?' sel-green':'');
+  gi('bB').className='char-btn'+(S.char==='blue'?' sel-blue':'');
 }
-
-function syncFlashBtn(){
-  const btn=document.getElementById('flashBtn');
-  btn.className=S.flash?'flash-btn on':'flash-btn';
-  btn.textContent=S.flash?'発光中 ON':'発光中';
+function syncFb(){
+  var b=gi('flashBtn');
+  b.className=S.flashC[S.char]?'fb on':'fb';
+  b.textContent=S.flashC[S.char]?'発光中 ON':'発光中';
 }
-
-function renderActRow(){
-  const row=document.getElementById('actRow');
+function renderAct(){
+  var r=gi('actRow');
   if(S.char==='blue'){
-    row.innerHTML=`<button class="cz-btn" onclick="doKyoki()">周期</button><button class="cz-btn" onclick="doGTenjo()" style="background:#555">G数</button><button class="back-btn" onclick="doBack()">戻る</button>`;
-  } else {
-    row.innerHTML=`<button class="cz-btn" onclick="doCZ()">CZ</button><button class="back-btn" onclick="doBack()">戻る</button>`;
+    r.innerHTML='<button class="cz-btn" onclick="doKyoki()">周期</button><button class="cz-btn" onclick="doGT()" style="background:#555">G数</button><button class="bk-btn" onclick="doBack()">戻る</button>';
+  }else{
+    r.innerHTML='<button class="cz-btn" onclick="doCZ()">CZ</button><button class="cz-btn" style="background:#7b2fa8" onclick="doCZU()">🟣</button><button class="bk-btn" onclick="doBack()">戻る</button>';
   }
 }
-
-// ── Actions ────────────────────────────────────────────────────
-function goSet(i){ S.cur=i; S.info=false; renderAll(); }
-function goInfo(){ S.info=true; renderTopTabs(); showInfo(); }
-function goSub(sub){ S.sub=sub; renderSubTabs(); if(sub==='point') renderPoints(); save(); }
-function selChar(c){ S.char=c; syncCharBtns(); renderActRow(); save(); }
-
+function goSet(i){S.cur=i;S.info=false;renderAll();}
+function goInfo(){S.info=true;renderTabs();showInfo();}
+function goSub(s){S.sub=s;renderSubTabs();if(s==='point')renderPoints();save();}
+function selChar(c){S.char=c;syncCh();syncFb();renderAct();save();}
 function addSym(sym){
-  const set=cs();
-  const s=S.flash?`[${sym}]`:sym;
+  var set=cs(),s=S.flashC[S.char]?'['+sym+']':sym;
   set[S.char].lines[set[S.char].lines.length-1].push(s);
-  if(S.sub==='point') renderPoints();
-  save();
+  if(S.sub==='point')renderPoints();save();
 }
-
-// ↓ = 無名と生駒に同時追加
-function addDown(){
-  const set=cs();
-  set.red.lines[set.red.lines.length-1].push('↓');
-  set.green.lines[set.green.lines.length-1].push('↓');
-  if(S.sub==='point') renderPoints();
-  save();
-}
-
-// / = 前兆確認（改行なし）
-function addSlash(){
-  const set=cs();
-  const d=set[S.char];
-  d.lines[d.lines.length-1].push('/');
-  if(S.sub==='point') renderPoints();
-  save();
-}
-
-function togFlash(){ S.flash=!S.flash; syncFlashBtn(); }
-
-function totalBell(){ return S.sets.reduce((s,set)=>s+(set.bell||0),0); }
-function chgBell(d){ const set=cs(); set.bell=Math.max(0,(set.bell||0)+d); document.getElementById('bellVal').textContent=totalBell(); save(); }
-
-// CZ: 🔴🟢 .bell付加+改行
+function togFlash(){S.flashC[S.char]^=1;syncFb();}
+function chgBell(d){var set=cs();set.bell=Math.max(0,(set.bell||0)+d);gi('bellVal').textContent=tbel();save();}
 function doCZ(){
-  const set=cs();
-  const d=set[S.char];
-  const carry=d.carryPt||0;
-  const pt=carry+calcPt(d);
-  d.lines[d.lines.length-1].push(`.${pt}`);
-  d.lines.push([]);
-  if(S.sub==='point') renderPoints();
-  save();
+  var set=cs(),d=set[S.char],pt=(d.carryPt||0)+calcPt(d);
+  d.lines[d.lines.length-1].push('.'+pt);d.lines.push([]);
+  if(S.sub==='point')renderPoints();save();
 }
-
-const KYOKI_MARKS=['①','②','③','④','⑤','⑥'];
-
-// 周期: 🔵 規定到達（前兆）→ .pt①記録、ptリセット
+function doCZU(){
+  var set=cs(),d=set[S.char],pt=(d.carryPt||0)+calcPt(d);
+  d.lines[d.lines.length-1].push('🟣'+pt);d.lines.push([]);
+  if(S.sub==='point')renderPoints();save();
+}
 function doKyoki(){
-  const set=cs();
-  const d=set.blue;
-  const pt=calcBluePt(d);
-  const mark=KYOKI_MARKS[set.blueKyoki||0];
-  d.lines[d.lines.length-1].push(`${mark}.${pt}`);
-  d.lines.push([]);
+  var set=cs(),d=set.blue,pt=calcPt(d,1),mk=KM[set.blueKyoki||0];
+  d.lines[d.lines.length-1].push(mk+'.'+pt);d.lines.push([]);
   set.blueKyoki=(set.blueKyoki||0)+1;
-  if(S.sub==='point') renderPoints();
-  save();
+  if(S.sub==='point')renderPoints();save();
 }
-
-// G数天井: .pt②形式
-function doGTenjo(){
-  const set=cs();
-  const d=set.blue;
-  const pt=calcBluePt(d);
-  const mark=KYOKI_MARKS[set.blueKyoki||0];
-  d.lines[d.lines.length-1].push(`${mark}(${pt})`);
-  d.lines.push([]);
+function doGT(){
+  var set=cs(),d=set.blue,pt=calcPt(d,1),mk=KM[set.blueKyoki||0];
+  d.lines[d.lines.length-1].push(mk+'('+pt+')');d.lines.push([]);
   set.blueKyoki=(set.blueKyoki||0)+1;
-  if(S.sub==='point') renderPoints();
-  save();
+  if(S.sub==='point')renderPoints();save();
 }
-
 function doBack(){
-  const set=cs();
-  const lines=set[S.char].lines;
-  for(let i=lines.length-1;i>=0;i--){
+  var set=cs(),lines=set[S.char].lines;
+  for(var i=lines.length-1;i>=0;i--){
     if(lines[i].length>0){
-      const removed=lines[i].pop();
-      // 🔵の周期・G数天井マークを消したらblueKyokiを戻す
-      if(S.char==='blue' && /^[①②③④⑤⑥]/.test(removed)){
-        set.blueKyoki=Math.max(0,(set.blueKyoki||1)-1);
-      }
-      while(lines.length>1&&lines[lines.length-1].length===0) lines.pop();
+      var r=lines[i].pop();
+      if(S.char==='blue'&&/^[①②③④⑤⑥]/.test(r))set.blueKyoki=Math.max(0,(set.blueKyoki||1)-1);
+      while(lines.length>1&&lines[lines.length-1].length===0)lines.pop();
       break;
     }
   }
-  if(S.sub==='point') renderPoints();
-  save();
+  if(S.sub==='point')renderPoints();save();
 }
-
-// 次セット: ダイアログ経由
 function nextSet(){
-  document.getElementById('normalGInp').value='';
-  document.getElementById('nextSetOv').classList.add('show');
-  setTimeout(()=>document.getElementById('normalGInp').focus(),100);
+  gi('ngInp').value='';
+  gi('nsOv').classList.add('show');
+  setTimeout(function(){gi('ngInp').focus();},100);
 }
-
 function doNextSet(carry){
-  const normalG=parseInt(document.getElementById('normalGInp').value)||0;
-  document.getElementById('nextSetOv').classList.remove('show');
-  const set=cs();
-  set.normalG=normalG;
+  var ng=parseInt(gi('ngInp').value)||0;
+  gi('nsOv').classList.remove('show');
+  var set=cs();set.normalG=ng;
   if(carry){
-    const hasCZRed=set.red.lines.some(line=>line.some(sym=>sym.startsWith('.')&&sym.length>1));
-    const hasCZGreen=set.green.lines.some(line=>line.some(sym=>sym.startsWith('.')&&sym.length>1));
-    const ptRed=(hasCZRed?0:(set.red.carryPt||0))+calcPt(set.red);
-    const ptGreen=(hasCZGreen?0:(set.green.carryPt||0))+calcPt(set.green);
-    ['red','green'].forEach(c=>{
-      const d=set[c]; const pt=c==='red'?ptRed:ptGreen;
-      if(pt>0) d.lines[d.lines.length-1].push(`(${pt})`);
-    });
-    S.sets.push(newSet(ptRed,ptGreen));
-  } else {
-    S.sets.push(newSet(null,null));
-  }
-  S.cur=S.sets.length-1; S.sub='point';
-  renderAll(); save();
+    var hR=hasCZ(set.red),hG=hasCZ(set.green);
+    var pR=(hR?0:(set.red.carryPt||0))+calcPt(set.red);
+    var pG=(hG?0:(set.green.carryPt||0))+calcPt(set.green);
+    ['red','green'].forEach(function(c){var d=set[c],p=c==='red'?pR:pG;if(p>0)d.lines[d.lines.length-1].push('('+p+')');});
+    S.sets.push(ns(pR,pG));
+  }else{S.sets.push(ns(null,null));}
+  S.cur=S.sets.length-1;S.sub='point';renderAll();save();
 }
-
-// ── Copy ──────────────────────────────────────────────────────
 function copyHist(){
-  let out='【集計】\n';
-  out+=`総G数：${S.totalG}G\n`;
-  const allL={red:[],green:[],blue:[]};
-  let bellSum=0;
-  S.sets.forEach(set=>{ CHARS.forEach(c=>{ allL[c].push(...set[c].lines); }); bellSum+=set.bell||0; });
-  out+=`🔔${bellSum}\n`;
-  let tf=0,td=0;
-  CHARS.forEach(c=>{ const r=calcFlashRate(allL[c]); out+=`${CEMOJI[c]}${r.flash}/${r.denom} (${r.rate}%)\n`; tf+=r.flash; td+=r.denom; });
+  var out='【集計】\n総G数：'+S.totalG+'G\n';
+  var aL={red:[],green:[],blue:[]},bs=0;
+  S.sets.forEach(function(st){CH.forEach(function(c){aL[c].push.apply(aL[c],st[c].lines);});bs+=st.bell||0;});
+  out+='🔔'+bs+'\n';
+  CH.forEach(function(c){var r=calcFR(aL[c]);out+=CE[c]+r.flash+'/'+r.denom+' ('+r.rate+'%)\n';});
   out+='\n';
-  S.sets.forEach((set,i)=>{
-    out+=`【${i+1}】\n`;
-    if(set.upperMemo) out+=set.upperMemo+'\n\n';
-    CHARS.forEach(c=>{
-      const d=set[c]; const carry=d.carryPt;
-      let txt='';
-      if(carry!==null&&carry>0) txt+=`(${carry})→\n`;
-      txt+=d.lines.map(l=>l.join('')).filter(l=>l.length>0).join('\n');
-      if(txt.trim()) out+=`${CEMOJI[c]}${txt}\n`;
-    });
-    if(set.lowerMemo) out+='\n'+set.lowerMemo+'\n';
+  S.sets.forEach(function(st,i){
+    out+='【'+(i+1)+'】\n';
+    if(st.upperMemo)out+=st.upperMemo+'\n\n';
+    CH.forEach(function(c){var d=st[c],cp=d.carryPt,txt='';if(cp!==null&&cp>0)txt+='('+cp+')→\n';txt+=d.lines.map(function(l){return l.join('');}).filter(function(l){return l.length>0;}).join('\n');if(txt.trim())out+=CE[c]+txt+'\n';});
+    if(st.lowerMemo)out+='\n'+st.lowerMemo+'\n';
     out+='\n';
   });
-  if(S.globalMemo) out+=S.globalMemo;
-  const text=out.trim();
-  if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(text).then(showToast).catch(()=>fbCopy(text)); }
+  if(S.globalMemo)out+=S.globalMemo;
+  var text=out.trim();
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(showToast).catch(function(){fbCopy(text);});}
   else fbCopy(text);
 }
-
-function fbCopy(text){ const ta=document.createElement('textarea'); ta.value=text; ta.style.cssText='position:fixed;opacity:0'; document.body.appendChild(ta); ta.focus(); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); showToast(); }
-function showToast(){ const t=document.getElementById('toast'); t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1500); }
-
-function saveMemo(type){ const set=cs(); if(type==='upper') set.upperMemo=document.getElementById('taUpper').value; else set.lowerMemo=document.getElementById('taLower').value; save(); }
-function saveGlobal(){ S.globalMemo=document.getElementById('taGlobal').value; save(); }
-function updateTotalG(){ S.totalG=parseInt(document.getElementById('totalGInp').value)||0; save(); renderStats(); }
-
-function openSettings(){ document.getElementById('settingsOv').classList.add('show'); }
-function closeSettings(){ document.getElementById('settingsOv').classList.remove('show'); }
-function applyLight(){ const l=document.getElementById('togLight').checked; document.body.style.background=l?'#f5f5f5':'#0d0d0d'; document.body.style.color=l?'#111':'#fff'; }
-
-function openDelLast(){ if(S.sets.length<=1){ showToast(); return; } document.getElementById('delLastOv').classList.add('show'); }
-function closeDelLast(){ document.getElementById('delLastOv').classList.remove('show'); }
-function doDelLast(){
-  if(S.sets.length<=1) return;
-  S.sets.pop();
-  S.cur=S.sets.length-1;
-  closeDelLast(); renderAll(); save();
-}
-
-function openReset(){ document.getElementById('resetOv').classList.add('show'); }
-function closeReset(){ document.getElementById('resetOv').classList.remove('show'); }
-function doReset(){ localStorage.removeItem('kb2v4'); S={cur:0,sub:'point',info:false,char:'red',flash:false,totalG:0,globalMemo:'',sets:[newSet()]}; closeReset(); renderAll(); }
-
+function fbCopy(text){var ta=document.createElement('textarea');ta.value=text;ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);ta.focus();ta.select();document.execCommand('copy');document.body.removeChild(ta);showToast();}
+function showToast(){var t=gi('toast');t.classList.add('show');setTimeout(function(){t.classList.remove('show');},1500);}
+function saveMemo(type){var set=cs();if(type==='upper')set.upperMemo=gi('taU').value;else set.lowerMemo=gi('taL').value;save();}
+function saveGlobal(){S.globalMemo=gi('taGl').value;save();}
+function updateTotalG(){S.totalG=parseInt(gi('tgInp').value)||0;save();renderStats();}
+function openDelLast(){if(S.sets.length<=1){showToast();return;}gi('dlOv').classList.add('show');}
+function closeDL(){gi('dlOv').classList.remove('show');}
+function doDL(){if(S.sets.length<=1)return;S.sets.pop();S.cur=S.sets.length-1;closeDL();renderAll();save();}
+function openReset(){gi('rsOv').classList.add('show');}
+function closeRS(){gi('rsOv').classList.remove('show');}
+function doRS(){localStorage.removeItem('kb2v4');S={cur:0,sub:'point',info:false,char:'red',flashC:{red:0,green:0,blue:0},totalG:0,globalMemo:'',sets:[ns()]};closeRS();renderAll();}
 load();
+S.flashC=S.flashC||{red:0,green:0,blue:0};
+var lpT=null;
+(function(){
+  var el=gi('sg2');
+  function ep(){if(lpT){clearTimeout(lpT);lpT=null;}}
+  el.addEventListener('pointerdown',function(e){
+    var s=e.target.dataset.s;
+    if(!s)return;
+    e.preventDefault();
+    if(s==='↓'){var c=cs();[c.red,c.green].forEach(function(d){d.lines[d.lines.length-1].push('↓');});if(S.sub==='point')renderPoints();save();return;}
+    if('★◇◆'.indexOf(s)>=0){if(lpT)clearTimeout(lpT);lpT=setTimeout(function(){lpT=null;addSym(s);},450);}
+    else{addSym(s);}
+  });
+  el.addEventListener('pointerup',ep);
+  el.addEventListener('pointercancel',ep);
+  el.addEventListener('pointerleave',ep);
+})();
 renderAll();
 </script>
 </body>
