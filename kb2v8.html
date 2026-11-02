@@ -45,11 +45,17 @@ button{font-family:inherit;touch-action:manipulation}
 .ia{flex-shrink:0;background:#141414;border-top:1px solid #2a2a2a;padding:5px 6px 6px}
 .crb{display:flex;gap:5px;margin-bottom:5px}
 .chb{flex:1;height:40px;background:#202020;border:2px solid transparent;border-radius:10px;display:flex;align-items:center;justify-content:center}
-.chb.s-red{border-color:#e44}.chb.s-green{border-color:#3d3}.chb.s-blue{border-color:#55f}
+.chb.s-red{border-color:#e44}.chb.s-green{border-color:#3d3}.chb.s-blue{border-color:#a55ef0}
 .cbd{width:20px;height:20px;border-radius:50%}
 .grid{display:grid;grid-template-columns:repeat(6,1fr);gap:5px;margin-bottom:5px}
 .sb{height:42px;background:#202020;border:none;border-radius:10px;color:#fff;font-size:20px}
 .sb:active{background:#383838}
+.grid{grid-template-rows:repeat(6,19px)}
+.grid .sb{height:auto}
+.sb.sm{font-size:18px}
+.sb.big{font-size:30px}
+.sb.big.fl{font-size:14px}
+.rb{flex:0 0 56px;height:38px;background:#202020;border:none;border-radius:10px;font-size:18px}
 .sb.sp{font-size:17px;color:#fa0}.sb.bk{font-size:15px;color:#e44}
 .sb.fl{font-size:12px;color:#888;border:2px solid #333}
 .sb.fl.on{color:#0ff;border-color:#0ff;background:#001e1e}
@@ -60,7 +66,7 @@ button{font-family:inherit;touch-action:manipulation}
 .cp{flex:0 0 76px;height:38px;background:#202020;border:none;border-radius:10px;color:#aaa;font-size:12px}
 .evr{display:flex;gap:5px}
 .eb{flex:1;height:44px;border:none;border-radius:10px;color:#fff;font-size:13px;font-weight:bold;background:#1e3fa0}
-.eb.up{background:#6a2a9a}.eb.cy{background:#2d3fbf}.eb.sg{background:#3a3a3a}.eb.st{background:#8a5a00}
+.eb.up{background:#6a2a9a}.eb.cy{background:#4a3aa8}.eb.sg{background:#3a3a3a}.eb.st{background:#8a5a00}
 .ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:flex-end;justify-content:center}
 .ov.show{display:flex}
 .shb{background:#222;border-radius:16px 16px 0 0;padding:14px 14px 22px;width:100%;max-width:480px;max-height:88vh;overflow-y:auto;-webkit-overflow-scrolling:touch}
@@ -119,25 +125,23 @@ textarea.fi{min-height:64px;resize:vertical}
 <div class="crb">
 <button class="chb" id="c_red" onclick="selCh('red')"><span class="cbd" style="background:#e44"></span></button>
 <button class="chb" id="c_green" onclick="selCh('green')"><span class="cbd" style="background:#3d3"></span></button>
-<button class="chb" id="c_blue" onclick="selCh('blue')"><span class="cbd" style="background:#55f"></span></button>
+<button class="chb" id="c_blue" onclick="selCh('blue')"><span class="cbd" style="background:#a55ef0"></span></button>
 </div>
 <div class="grid" id="pad">
-<button class="sb" data-s="○">○</button>
-<button class="sb" data-s="◎">◎</button>
-<button class="sb" data-s="●">●</button>
-<button class="sb" data-s="☆">☆</button>
-<button class="sb" data-s="★">★</button>
-<button class="sb" data-s="◇">◇</button>
-<button class="sb" data-s="◆">◆</button>
-<button class="sb" data-s="＊">＊</button>
-<button class="sb sp" data-s="↓">↓</button>
-<button class="sb sp" data-s="/">/</button>
-<button class="sb fl" id="flb" onclick="togFl()">発光中</button>
-<button class="sb bk" id="bkb" onclick="doBack()">戻</button>
+<button class="sb big" style="grid-area:1/1/4/3" data-s="○">○</button>
+<button class="sb big" style="grid-area:1/3/4/5" data-s="◎">◎</button>
+<button class="sb big" style="grid-area:4/1/7/3" data-s="●">●</button>
+<button class="sb big fl" style="grid-area:4/3/7/5" id="flb" onclick="togFl()">発光中</button>
+<button class="sb sm" style="grid-area:1/5/3/6" data-s="☆">☆</button>
+<button class="sb sm" style="grid-area:1/6/3/7" data-s="◇">◇</button>
+<button class="sb sm" style="grid-area:3/5/5/6" data-s="★">★</button>
+<button class="sb sm" style="grid-area:3/6/5/7" data-s="◆">◆</button>
+<button class="sb sm" style="grid-area:5/5/7/6" data-s="🦋">🦋</button>
+<button class="sb sp sm" style="grid-area:5/6/7/7" data-s="/">/</button>
 </div>
 <div class="row">
-<div class="bw"><button class="bpm" onclick="chgBell(-1)">－</button><span id="bellV" class="bv">🔔0</span><button class="bpm" onclick="chgBell(1)">＋</button></div>
-<button class="cp" onclick="copyHist()">履歴コピー</button>
+<div class="bw"><button class="bpm" onclick="chgBell(1)">＋</button><span id="bellV" class="bv">🔔0</span><button class="bpm" onclick="chgBell(-1)">－</button></div>
+<button class="rb" style="color:#fa0" id="dnb" onclick="addSym('↓')">↓</button><button class="rb" style="color:#e44;font-size:15px" id="bkb" onclick="doBack()">戻</button>
 </div>
 <div class="evr">
 <button class="eb" onclick="btnNew('cz')">CZ</button>
@@ -152,9 +156,9 @@ textarea.fi{min-height:64px;resize:vertical}
 <div id="toast"></div>
 <script>
 var KEY='kb2v8';
-var SP={'○':1,'◎':15,'●':15,'☆':15,'★':30,'◇':30,'◆':60,'＊':0,'/':0,'↓':0};
-/* 🔵カバネpt：チャンス目 低確1・高確2、複合☆2★4（仮）、オルスタ◇2◆4 */
-var SPB={'○':1,'◎':2,'●':2,'☆':2,'★':4,'◇':2,'◆':4,'＊':0,'/':0,'↓':0};
+var SP={'🦋':0,'○':1,'◎':15,'●':15,'☆':15,'★':30,'◇':30,'◆':60,'＊':0,'/':0,'↓':0};
+/* 🟣カバネpt：チャンス目 低確1・高確2、複合☆2★4（仮）、オルスタ◇2◆4 */
+var SPB={'🦋':0,'○':1,'◎':2,'●':2,'☆':2,'★':4,'◇':2,'◆':4,'＊':0,'/':0,'↓':0};
 var BMAX=14;
 var CIR='①②③④⑤⑥⑦⑧⑨⑩';
 var STATES=['リセット','非短縮','短縮','上位後短縮'];
@@ -264,7 +268,7 @@ function evLine(e){
     s+=e.link?' <span class="dim">→🟪</span>':' <span class="dim">🟪待ち</span>';
   }else if(e.t==='cyc'){
     v=evPt(e);
-    s=circ(e.cyc)+g+' 🔵'+(HOWL[e.how]||'')+(v!=null?(e.how==='pt'?' .'+v:' ('+v+')'):'')+' '+RESL[e.res||'']+rbTxt(e);
+    s=circ(e.cyc)+g+' 🟣'+(HOWL[e.how]||'')+(v!=null?(e.how==='pt'?' .'+v:' ('+v+')'):'')+' '+RESL[e.res||'']+rbTxt(e);
   }else if(e.t==='sug'){
     s=sugTxt(e,true);
   }
@@ -329,7 +333,7 @@ function ptText(sc,ch){
   return o;
 }
 function ptView(sc){
-  var DC={red:'#e44',green:'#3d3',blue:'#55f'};
+  var DC={red:'#e44',green:'#3d3',blue:'#a55ef0'};
   return ['red','green','blue'].map(function(c){
     return '<div class="cr"><div class="cw"><span class="cd" style="background:'+DC[c]+'"></span><span class="pb"'+(c==='blue'&&C.end[sc.id][c]>BMAX?' style="color:#f0f"':'')+'>'+C.end[sc.id][c]+'</span></div><div class="sy">'+esc(ptText(sc,c))+'</div></div>';
   }).join('');
@@ -360,7 +364,7 @@ function renderStat(){
   var h='<span>区間'+(UI.sec+1)+' '+esc(sc.state)+(sc.end?' <span class="dim">(終了)</span>':'')+'</span>'+
     '<span onclick="openNowG()">G <b>'+curG(sc)+'</b> <span class="dim">✎</span></span>'+
     '<span>'+circ(cycAt(sc.id))+'周期</span>'+
-    '<span style="color:#f66">●'+e.red+'</span><span style="color:#5d5">●'+e.green+'</span><span style="color:'+(e.blue>BMAX?'#f0f;font-weight:bold':'#88f')+'">●'+e.blue+(e.blue>BMAX?'!':'')+'</span>';
+    '<span style="color:#f66">●'+e.red+'</span><span style="color:#5d5">●'+e.green+'</span><span style="color:'+(e.blue>BMAX?'#f0f;font-weight:bold':'#c48af5')+'">●'+e.blue+(e.blue>BMAX?'!':'')+'</span>';
   if(pc)h+='<span class="pend" onclick="goView(\'all\')">⚠結果待ち'+pc+'</span>';
   gi('stat').innerHTML=h;
 }
@@ -374,7 +378,7 @@ function renderMain(){
 function renderIA(){
   ['red','green','blue'].forEach(function(c){gi('c_'+c).className='chb'+(UI.ch===c?' s-'+c:'');});
   gi('bkb').style.opacity=UI.sub==='pt'?'1':'.35';
-  var f=UI.fl[UI.ch];gi('flb').className='sb fl'+(f?' on':'');gi('flb').textContent=f?'発光ON':'発光中';
+  var f=UI.fl[UI.ch];gi('flb').className='sb big fl'+(f?' on':'');gi('flb').textContent=f?'発光ON':'発光中';
   var t=0;P().secs.forEach(function(s){t+=s.bell||0;});
   gi('bellV').textContent='🔔'+(cs().bell||0)+' (計'+t+')';
 }
@@ -424,7 +428,7 @@ function statsHTML(){
     kv('🔴🟢 合算',avg(czR.concat(dR,czG,dG)),(czR.length+dR.length+czG.length+dG.length)+'回')+
     kv('<span class="dim">参考：🔴 CZのみ</span>',avg(czR),czR.length+'回')+
     kv('<span class="dim">参考：🟢 CZのみ</span>',avg(czG),czG.length+'回')+
-    kv('🔵 pt到達',avg(bp),bp.length+'回')+
+    kv('🟣 pt到達',avg(bp),bp.length+'回')+
     '</div>';
   var fR=flashOf('red'),fG=flashOf('green'),fRG={f:fR.f+fG.f,d:fR.d+fG.d};
   h+='<div class="card"><h3>低確発光率（◎÷(○+◎)）</h3>'+kv('🔴',frTxt(fR))+kv('🟢',frTxt(fG))+kv('🔴🟢',frTxt(fRG))+'</div>';
@@ -645,7 +649,7 @@ function evSheet(){
     h+=fSeg('how','到達のしかた',[['pt','pt到達'],['g','規定G'],['super','超']]);
     if(SH.isNew&&!e.ins)ph='自動 '+C.end[e.sec].blue;
     else{var bv=cutv(e.id,'blue');ph=bv!=null?'自動 '+bv:'手入力';}
-    h+=fNum('bptOv','🔵pt（空欄＝自動）',ph);
+    h+=fNum('bptOv','🟣pt（空欄＝自動）',ph);
   }
   if(e.t==='up'&&SH.isNew&&!e.ins){
     var po=pendOS(sc);
@@ -719,7 +723,7 @@ function insAfter(){
 function pickSheet(){
   return head('何を挿入する？')+'<div class="hint">挿入したCZ・周期のptは手入力になります</div>'+
   '<div class="btns"><button class="bt" onclick="pickT(\'cz\')">CZ</button><button class="bt" style="background:#6a2a9a" onclick="pickT(\'up\')">🟪格上</button></div>'+
-  '<div class="btns"><button class="bt" style="background:#2d3fbf" onclick="pickT(\'cyc\')">周期</button><button class="bt gr" onclick="pickT(\'sug\')">示唆</button></div>'+
+  '<div class="btns"><button class="bt" style="background:#4a3aa8" onclick="pickT(\'cyc\')">周期</button><button class="bt gr" onclick="pickT(\'sug\')">示唆</button></div>'+
   '<div class="btns"><button class="bt gr" onclick="closeSh()">キャンセル</button></div>';
 }
 function pickT(t){openNew(t,{sid:SH.sid,ord:SH.ord,ins:true});}
@@ -771,6 +775,12 @@ function saveST(){
   P().secs.push(newSec(e.state,e.carry==='y'));
   UI.sec=P().secs.length-1;UI.sub='hist';UI.view='sec';
   save();closeSh();render();
+  bkCopy();
+}
+function bkCopy(){
+  var t=JSON.stringify(DB),ok=function(){toast('控え(JSON)をコピーしました。メモに貼ってね');};
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(ok).catch(function(){fbCopy(t);ok();});}
+  else{fbCopy(t);ok();}
 }
 function openSec(id){
   var sc=secById(id),en=sc.end||{};
@@ -894,7 +904,7 @@ function histText(){
   p.secs.forEach(function(sc,i){
     o+='【区間'+(i+1)+' '+sc.state+(sc.carry?' 引継':'')+'】\n';
     evsByG(sc.id).forEach(function(e){o+=plain(evLine(e)).replace(/\s+/g,' ').trim()+'\n';});
-    ['red','green','blue'].forEach(function(c){var t=ptText(sc,c).trim();if(t)o+={red:'🔴',green:'🟢',blue:'🔵'}[c]+t+'\n';});
+    ['red','green','blue'].forEach(function(c){var t=ptText(sc,c).trim();if(t)o+={red:'🔴',green:'🟢',blue:'🟣'}[c]+t+'\n';});
     if(sc.end)o+=plain(stLine(sc))+'\n';
     if(sc.memo)o+=sc.memo+'\n';
     o+='\n';
