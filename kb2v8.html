@@ -439,7 +439,7 @@ function renderIA(){
 }
 function allHist(){
   var h='';P().secs.forEach(function(sc,i){h+=secHist(sc,i);});
-  return h+'<div class="dim" style="padding:12px">行をタップで編集・削除・挿入／区間見出しで状態変更</div>';
+  return '<button class="dbt pr" style="margin:10px;width:calc(100% - 20px)" onclick="copyText(histOnly())">履歴をコピー</button>'+h+'<div class="dim" style="padding:12px">行をタップで編集・削除・挿入／区間見出しで状態変更</div>';
 }
 
 /* 判別 */
@@ -950,6 +950,19 @@ function tblTSV(){
   return out.join('\n');
 }
 
+function histOnly(){
+  calc();var p=P(),o=[];
+  o.push(p.info.date+' '+p.info.store+' '+p.info.dai);
+  p.secs.forEach(function(sc,i){
+    o.push('');o.push('【'+(i+1)+'】'+sc.state);
+    evsByG(sc.id).forEach(function(e){if(e.t!=='sug')o.push(plain(evLine(e)).replace(/\s+/g,' ').trim());});
+    if(sc.end)o.push(plain(stLine(sc)));
+    var sl=plain(sugLines(sc).replace(/<\/div>/g,'\n').replace(/<\/span><span/g,'</span> <span')).trim();
+    if(sl)o.push(sl);
+    if(sc.memo)o.push(sc.memo);
+  });
+  return o.join('\n');
+}
 /* 出力 */
 function histText(){
   var p=P();calc();
