@@ -218,7 +218,10 @@ html,body{background:#b3cbb7;color:#3f5a48}
 <div id="toast"></div>
 <script>
 var KEY='kb2v8';
-var SP={'🦋':0,'○':1,'◎':15,'●':15,'☆':15,'★':30,'◇':30,'◆':60,'＊':0,'/':0,'↓':0};
+/* 🔴🟢：公式（最大100・高確対応10・2個チャンス目高確20） */
+var SP={'🦋':0,'○':1,'◎':10,'●':10,'☆':10,'★':20,'◇':20,'◆':40,'＊':0,'/':0,'↓':0};
+var RMAX=100;
+var PAIR='↓';
 /* 🟣カバネpt：チャンス目 低確1・高確2、複合☆2★4（仮）、オルスタ◇2◆4 */
 var SPB={'🦋':0,'○':1,'◎':2,'●':2,'☆':2,'★':4,'◇':2,'◆':4,'＊':0,'/':0,'↓':0};
 var BMAX=14;
@@ -398,7 +401,7 @@ function ptText(sc,ch){
 function ptView(sc){
   var DC={red:'#e88a8a',green:'#7cbf8a',blue:'#b39ddb'};
   return ['red','green','blue'].map(function(c){
-    return '<div class="cr"><div class="cw"><span class="cd" style="background:'+DC[c]+'"></span><span class="pb"'+(c==='blue'&&C.end[sc.id][c]>BMAX?' style="color:#c0507a"':'')+'>'+C.end[sc.id][c]+'</span></div><div class="sy">'+esc(ptText(sc,c))+'</div></div>';
+    return '<div class="cr"><div class="cw"><span class="cd" style="background:'+DC[c]+'"></span><span class="pb"'+((c==='blue'?C.end[sc.id][c]>BMAX:C.end[sc.id][c]>RMAX)?' style="color:#c0507a;text-decoration:underline"':'')+'>'+C.end[sc.id][c]+'</span></div><div class="sy">'+esc(ptText(sc,c))+'</div></div>';
   }).join('');
 }
 
@@ -427,7 +430,7 @@ function renderStat(){
   var h='<span>区間'+(UI.sec+1)+' '+esc(sc.state)+(sc.end?' <span class="dim">(終了)</span>':'')+'</span>'+
     '<span onclick="openNowG()">G <b>'+curG(sc)+'</b> <span class="dim">✎</span></span>'+
     '<span>'+circ(cycAt(sc.id))+'周期</span>'+
-    '<span style="color:#d97070">●'+e.red+'</span><span style="color:#5fa86e">●'+e.green+'</span><span style="color:'+(e.blue>BMAX?'#c0507a;font-weight:bold':'#9a7fc8')+'">●'+e.blue+(e.blue>BMAX?'!':'')+'</span>';
+    '<span style="color:#d97070'+(e.red>RMAX?';font-weight:bold;text-decoration:underline':'')+'">●'+e.red+(e.red>RMAX?'!':'')+'</span><span style="color:#5fa86e'+(e.green>RMAX?';font-weight:bold;text-decoration:underline':'')+'">●'+e.green+(e.green>RMAX?'!':'')+'</span><span style="color:'+(e.blue>BMAX?'#c0507a;font-weight:bold':'#9a7fc8')+'">●'+e.blue+(e.blue>BMAX?'!':'')+'</span>';
   if(pc)h+='<span class="pend" onclick="goView(\'all\')">⚠結果待ち'+pc+'</span>';
   gi('stat').innerHTML=h;
 }
@@ -579,7 +582,7 @@ function pushTk(sc,ch,k,s,fl,ev){var t={id:uid(),sec:sc.id,ch:ch,k:k};if(s)t.s=s
 function addSym(s){
   var sc=cs();
   if(s==='◇'||s==='◆'){doOS(s);return;}
-  if(s==='↓'&&UI.ch!=='blue'){pushTk(sc,'red','s','↓');pushTk(sc,'green','s','↓');}
+  if(PAIR.indexOf(s)>=0&&UI.ch!=='blue'){pushTk(sc,'red','s',s,s==='↓'?0:UI.fl.red);pushTk(sc,'green','s',s,s==='↓'?0:UI.fl.green);}
   else pushTk(sc,UI.ch,'s',s,UI.fl[UI.ch]);
   save();render();
   if(UI.sub==='pt')gi('main').scrollTop=1e6;
@@ -603,7 +606,7 @@ function doBack(){
       removeEv(t.ev);save();render();toast(nm+'を取り消しました');return;
     }
     a.splice(i,1);
-    if(t.s==='↓'&&UI.ch!=='blue'){var o=UI.ch==='red'?'green':'red';for(var j=a.length-1;j>=0;j--){var u=a[j];if(u.sec===sc.id&&u.ch===o&&u.s==='↓'&&!u.ev){a.splice(j,1);break;}}}
+    if(PAIR.indexOf(t.s)>=0&&UI.ch!=='blue'){var o=UI.ch==='red'?'green':'red';for(var j=a.length-1;j>=0;j--){var u=a[j];if(u.sec===sc.id&&u.ch===o&&u.s===t.s&&!u.ev){a.splice(j,1);break;}}}
     save();render();toast(t.s+' を戻しました');return;
   }
   toast('戻せる記号がありません');
@@ -831,14 +834,14 @@ function stSheet(){
     fTxt('memo','ST中メモ','超467.423.300.328 など')+charBox()+
     fNum('ngOv','この区間の通常G（空欄＝自動）',a!=null?'自動 '+a:'自動判定なし（⬛⭕/🟦/複合のG）')+
     fSeg('state','次の区間の状態',STATES.map(function(s){return[s,s];}))+
-    fSeg('carry','ポイント引き継ぐ？',[['y','はい'],['n','いいえ']])+
+
     '<div class="btns"><button class="bt gr" onclick="closeSh()">キャンセル</button><button class="bt" onclick="saveST()">次の区間へ ▶</button></div>';
 }
 function saveST(){
   readIn();var e=SH.e;
   if(!e.state){toast('次の区間の状態を選んでね');return;}
   var sc=cs();sc.end={ren:e.ren,mai:e.mai,memo:e.memo,ngOv:e.ngOv,chars:e.chars||[]};
-  P().secs.push(newSec(e.state,e.carry==='y'));
+  P().secs.push(newSec(e.state,true));
   UI.sec=P().secs.length-1;UI.sub='hist';UI.view='sec';
   save();closeSh();render();
   bkCopy();
